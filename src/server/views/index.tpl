@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><!--
 
 ############################################################
-Super Python - Ambiente de Programação do Usuário
+Super Python - User Programming Interface
 ############################################################
 
 :Author: *Carlo E. T. Oliveira*
@@ -23,14 +23,10 @@ Super Python - Ambiente de Programação do Usuário
 <script type="text/javascript" src="libs/custom_VFS.js"></script>
 <script type="text/python" src="libs/importhooks/localstorage.py"></script>
 <script type="text/python" src="libs/importhooks/custom_VFS.py"></script>
-<script type="text/javascript">
-function bw_and(a,b) {return a & b}
-function bw_nand(a,b) {return ~a & b}
-</script>
 <script type="text/python">
 from browser import window
 from browser import doc, svg
-from caras import main
+from superpython import main
 main(doc,svg)
 </script>
 

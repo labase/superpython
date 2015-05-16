@@ -6,6 +6,7 @@ threadsafe: yes
 
 handlers:
 
+
 - url: /(.*\.css)
   mime_type: text/css
   static_files: static/css/\1
@@ -24,7 +25,7 @@ handlers:
 - url: /(spy.*\.py)
   mime_type: text/plain
   static_files: src/main/python/client/\1
-  upload: src/main/python/client/(.*\.py)
+  upload: src/client/(.*\.py)
 
 - url: /(libs.*\.py)
   mime_type: text/plain
@@ -37,7 +38,7 @@ handlers:
   upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png|svg))
 
 - url: .*  # This regex directs all routes to main.app
-  script: src/main/python/main.bottle
+  script: src.main.bottle
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
@@ -48,7 +49,7 @@ handlers:
 # Note that dependencies must be located in your project directory - packages
 # installed in the Python environment are not loaded by the App Engine development
 # server or deployment tools.
-# TODO: List any other App Engine SDK libs you may need here.
+# List any other App Engine SDK libs you may need here.
 libraries:
 - name: jinja2
   version: latest

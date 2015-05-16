@@ -23,6 +23,7 @@ license = 'GNU General Public License v2 (GPLv2)'
 summary = "A project to teach primary and secondary students to program web games in Python."
 version = __version__
 default_task = ['analyze', 'publish', 'buid_docs']  # , 'post_docs']
+# default_task = ['analyze']  # , 'post_docs']
 
 
 @init
@@ -45,7 +46,7 @@ def initialize(project):
     header = open('header.py').read()
     project.set_property('dir_source_main_python', 'src')
     project.set_property('dir_source_unittest_python', 'tests')
-    project.set_property('pybuilder_header_plugin_expected_header', header)
+    # project.set_property('pybuilder_header_plugin_expected_header', header)
     project.set_property('pybuilder_header_plugin_break_build', True)
 
 
@@ -65,5 +66,5 @@ def buid_docs(project, logger):
 @task
 def prepare_for_gae(project, logger):
     import shutil
-    shutil.copy("src/impressious/__init__.py", "src")
-    logger.info(" copy src/impressious/__init__.py to src")
+    shutil.copy("src/client/__init__.py", "src")
+    logger.info(" copy src/client/__init__.py to src")

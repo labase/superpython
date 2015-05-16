@@ -16,3 +16,14 @@
 #
 # Você deve ter recebido uma cópia da Licença Pública Geral GNU
 # junto com este programa, se não, veja em <http://www.gnu.org/licenses/>
+
+"""Controller handles routes starting with /RESOURCE_NAME.
+
+Change this file's name and contents as appropriate to the
+resources your app exposes to clients.
+
+"""
+__author__ = 'carlo'
+import requests
+import json
+requests.get()

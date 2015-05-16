@@ -24,7 +24,7 @@ handler.
 """
 from lib import bottle
 from lib.bottle import Bottle, view
-# TODO: name and list your controllers here so their routes become accessible.
+# name and list your controllers here so their routes become accessible.
 from server.controllers import main_controller
 
 # Enable debugging, which gives us tracebacks
@@ -35,7 +35,6 @@ bottle.DEBUG = True
 bottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
-# TODO: Change 'RESOURCE_NAME' and add new controller references
 bottle.mount("/pontos", main_controller.bottle)
 # bottle.mount("/pontos", pontos_controller.bottle)
 
