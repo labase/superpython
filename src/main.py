@@ -26,7 +26,10 @@ from lib import bottle
 from lib.bottle import Bottle, view, request
 # name and list your controllers here so their routes become accessible.
 from server.controllers import main_controller
+import collections
 
+Item = collections.namedtuple('Item', 'name picture')
+PICTURE = "http://www.floresjardim.com/imagens/bd/rosaazul.jpg"
 # Enable debugging, which gives us tracebacks
 bottle.DEBUG = True
 
@@ -44,7 +47,9 @@ bottle.mount("/pontos", main_controller.bottle)
 def home():
     """ Return Hello World at application root URL"""
     project = request.urlparts.geturl().split('/')[2].split('.')[0]
-    return dict(user="fake: %s" % project, result=[['projeto %d' % (a*4+b) for a in range(4)] for b in range(4)])
+    #  items = [[Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4)] for b in range(4)]
+    items = [Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4) for b in range(4)]
+    return dict(user="fake: %s" % project, result=items)
 
 
 @bottle.error(404)
