@@ -11,7 +11,7 @@ Notas de Lançamento V. 0.1.0
 Milestone
 =========
 
-Kiss - Protótipo da inteface Gráfica
+Bruce - Protótipo da inteface Gráfica
 
 Aspectos do Lançamento
 ======================
@@ -51,9 +51,9 @@ Nenhum conserto notável.
 Questões e Problemas Conhecidos
 ===============================
 
-A jogabilidade atual não é boa, deve ser trocada por drag and drop.
+A funcionalidade ainda é muito simples, requer melhorias.
 
-Uma nova versão deve ser feita usando o engenho Crafty.
+Uma nova versão deve suportar o monitoramento  da atividade dos alunos.
 
 Lançamentos Anteriores e Posteriores
 ====================================

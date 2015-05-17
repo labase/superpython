@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Resultado do Jogo das Carinhas</title>
+    <title>Resultado do Superpython</title>
     <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 <body>
@@ -31,12 +31,12 @@
         <tbody>
             % for line in result:
             <tr>
-                <td><span>{{ line["carta"] }}<span></td>
-                <td><span>{{ line["casa"] }}<span></td>
-                <td><span>{{ line["move"] }}<span></td>
-                <td><span>{{ line["ponto"] }}<span></td>
-                <td><span>{{ line["tempo"] }}<span></td>
-                <td><span>{{ line["valor"] }}<span></td>
+                <td><span>{{ line["carta"] }}</span></td>
+                <td><span>{{ line["casa"] }}</span></td>
+                <td><span>{{ line["move"] }}</span></td>
+                <td><span>{{ line["ponto"] }}</span></td>
+                <td><span>{{ line["tempo"] }}</span></td>
+                <td><span>{{ line["valor"] }}</span></td>
             </tr>
             % end
         </tbody>

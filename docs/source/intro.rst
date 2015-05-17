@@ -117,7 +117,7 @@ SuperPython é programado em `Brython <http://www.brython.info>`_
 
 Funcionalidades Documentadas:
 
-* Modelo do Jogo Carinhas : Entidades Basicas :ref:`modulos_superpython`
+* Modelo do SuperPython : Entidades Basicas :ref:`modulos_superpython`
 
-* Testes Unitários do Jogo Carinhas : :ref:`testes_superpython`
+* Testes Unitários do SuperPython : :ref:`testes_superpython`
 

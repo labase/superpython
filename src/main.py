@@ -23,7 +23,7 @@ Loads the Bottle framework and mounts controllers.  Also adds a custom error
 handler.
 """
 from lib import bottle
-from lib.bottle import Bottle, view
+from lib.bottle import Bottle, view, request
 # name and list your controllers here so their routes become accessible.
 from server.controllers import main_controller
 
@@ -43,7 +43,8 @@ bottle.mount("/pontos", main_controller.bottle)
 @view('index')
 def home():
     """ Return Hello World at application root URL"""
-    return dict(user="fake")
+    project = request.urlparts.geturl().split('/')[2].split('.')[0]
+    return dict(user="fake: %s" % project, result=[['projeto %d' % (a*4+b) for a in range(4)] for b in range(4)])
 
 
 @bottle.error(404)
