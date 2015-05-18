@@ -21,7 +21,7 @@
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request
+from lib.bottle import Bottle, view, request, response
 LAST = None
 PROJECTS = "jardim spy super geo".split()
 #FAKE = [{k: 10*i+j for j, k in enumerate(HEAD)} for i in range(4)]
@@ -32,7 +32,7 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 @bottle.get('/')
 @view('projeto')
-def score(author):
+def handle(author):
     project = request.get_cookie('_spy_project_')
     response.set_cookie('_spy_project_', project+author)
 
