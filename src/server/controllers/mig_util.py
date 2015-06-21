@@ -27,8 +27,9 @@ __author__ = 'carlo'
 import urllib
 import json
 from time import sleep
-USERS = "alpha bravo charlie echo golf hotel india" \
-        " kilo lima mike november oscar papa quebec sierra uniform zulu".split()
+# USERS = "alpha bravo charlie echo golf hotel india" \
+#        " kilo lima mike november oscar papa quebec sierra uniform zulu".split()
+USERS = "aries touro gemeos cancer leao virgem libra escorpiao sagitario capricornio aquario peixes".split()
 
 class Util:
     def __init__(self, user, passwd="nceufrj"):
@@ -103,7 +104,7 @@ class Util:
 ps = Util('carlo', 'labase')
 print(ps.login()._token)
 #USERS =["alpha"]
-files = [Util(fl).login().read_main_file("a50/%s.py" % fl) for fl in USERS]
+files = [Util(fl).login().read_main_file("%s/%s.py" % (fl, "gripe")) for fl in USERS]
 # print(ps._read_file("/pyschool/adv.py")['fileobj'])
 for f in files:
     print(f)

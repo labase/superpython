@@ -24,31 +24,25 @@ resources your app exposes to clients.
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view
-LAST = None
-HEAD = "carta casa move tempo ponto valor".split()
-FAKE = [{k: 10*i+j for j, k in enumerate(HEAD)} for i in range(4)]
+from lib.bottle import Bottle, view, request, response
+import collections
+
+Item = collections.namedtuple('Item', 'name picture')
+PICTURE = "http://www.floresjardim.com/imagens/bd/rosaazul.jpg"
+PROJECTS = "jardim spy super geo".split()
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
 
 
 @bottle.get('/')
-@view('resultado')
-def score():
-    try:
-        record_id = LAST
-        if record_id is None:
-            raise Exception()
-        '''
-        print('resultado', record_id)
-        record = database.DRECORD[record_id]
-        record = record[PEC]
-        print('record resultado:', record)
-        return dict(user=record_id, result=record)
-        '''
-    except Exception:
-        # return dict(user="FAKE", result=FAKE)
-        fake = dict(user="FAKE", result=FAKE)
-        # print('score', fake)
-        return fake
+@view('index')
+def home():
+    """ Return Hello World at application root URL"""
+    project = request.urlparts.geturl().split('/')[2].split('.')[0]
+    if project in PROJECTS:
+            response.set_cookie('_spy_project_', project)
+
+    #  items = [[Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4)] for b in range(4)]
+    items = [Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4) for b in range(4)]
+    return dict(user="fake: %s" % project, result=items)

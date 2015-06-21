@@ -22,9 +22,9 @@ handlers:
   static_files: static/\1
   upload: static/(.*\.py)
 
-- url: /(spy.*\.py)
+- url: /(super.*\.py)
   mime_type: text/plain
-  static_files: src/main/python/client/\1
+  static_files: src/client/\1
   upload: src/client/(.*\.py)
 
 - url: /(libs.*\.py)
@@ -38,7 +38,7 @@ handlers:
   upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png|svg))
 
 - url: .*  # This regex directs all routes to main.app
-  script: src.main.bottle
+  script: src.bottle
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
