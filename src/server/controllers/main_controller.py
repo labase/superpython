@@ -27,9 +27,15 @@ __author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response
 import collections
 
-Item = collections.namedtuple('Item', 'name picture')
+Item = collections.namedtuple('Item', 'name picture x y')
+Par = collections.namedtuple('Par', 'x y')
 PICTURE = "http://www.floresjardim.com/imagens/bd/rosaazul.jpg"
 PROJECTS = "jardim spy super geo".split()
+IPOS = [Par(100, 0), Par(250, -10), Par(400, -10), Par(550, 0), Par(920, 0)]
+ITEMS = [Item(name='projeto %d' % (a * 4 + b), picture=PICTURE, x=b * 160, y=a * 200) for a in range(6) for b in
+         range(5)]
+for indice, novos in enumerate(IPOS):
+    ITEMS[indice] = Item(ITEMS[indice].name, ITEMS[indice].picture, novos.x, novos.y)
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -41,8 +47,8 @@ def home():
     """ Return Hello World at application root URL"""
     project = request.urlparts.geturl().split('/')[2].split('.')[0]
     if project in PROJECTS:
-            response.set_cookie('_spy_project_', project)
+        response.set_cookie('_spy_project_', project)
 
-    #  items = [[Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4)] for b in range(4)]
-    items = [Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4) for b in range(4)]
+    # items = [[Item(name='projeto %d' % (a*4+b), picture=PICTURE) for a in range(4)] for b in range(4)]
+    items = ITEMS
     return dict(user="fake: %s" % project, result=items)

@@ -28,13 +28,19 @@ Super Python - User Programming Interface
     from browser import window
     from browser import doc, svg
     from superpython import main
-    main(doc,svg)
+    # main(doc,svg)
     </script>
         <style>
             body, html {
                 margin: 0;
                 height: 100%;
                 width: 100%;
+            }
+            #banner {
+                margin: 0 auto;
+                padding: 10px;
+                position:relative;
+                width:800px;
             }
 
             #menu {
@@ -45,10 +51,8 @@ Super Python - User Programming Interface
                 max-width: 90%;
                 height: 100%;
                 width: 100%;
-                margin: 0 auto;
                 display: table;
                 text-align: center;
-                padding: 10px;
             }
             #item {
                 height: 120px;
@@ -68,29 +72,22 @@ Super Python - User Programming Interface
 
 </head>
 <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true,
-                       custom_import_funcs:[import_hooks]})">
-     <H1>USER: {{ user }}</H1>
-     <div id="banner"></div>
-    <table id="box-table-a-" >
-        <tbody>
-            % for line in []:
-            <tr>
-                % for proj in line:
-                <td><span>{{ proj.name }}</span><img src="{{ proj.picture }}" /></td>
-                % end
-            </tr>
-            % end
-        </tbody>
-
-    </table>
-        <div id="menu">
+                       custom_import_funcs:[import_hooks]})" background="/images/pipe_back.jpg">
+    <H1>USER: {{ user }}</H1>
+    <div id="banner">
+        <div id="menu" style="position:absolute; left:0px; top:0px;">
             % for proj in result:
-                <div id="item">
+                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y }}px;"> <!--id="{{ 'item' + "".join(proj.name.split()) }}">-->
                     <span>{{ proj.name }}</span><br/>
                     <img src="{{ proj.picture }}" />
                 </div>
             %end
 
         </div>
+        <div style="position:absolute; left:0px; top:0px;">
+            <img src="/images/selector.png"></img>
+        </div>
+    </div>
+
 </body>
 </html>

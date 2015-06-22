@@ -32,7 +32,7 @@ import os
 IS_GAE = os.environ.get('SERVER_SOFTWARE') and os.environ['SERVER_SOFTWARE'].startswith('Development')
 
 
-def main(doc, svg=None):
+def main(browse, canvas, edit):
     print('SuperPython '+__version__)
-    superpython = SuperPython(doc)
+    superpython = SuperPython(browse, canvas, edit)
     return superpython
