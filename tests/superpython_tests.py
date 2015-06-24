@@ -29,40 +29,22 @@ Verifica a funcionalidade do cliente web.
 import unittest
 from client.superpython.core import SuperPython
 from client.superpython import main
+import sys
+if sys.version_info[0] == 2:
+    from mock import MagicMock, patch, ANY
+else:
+    from unittest.mock import MagicMock, patch, ANY
 
 
 class SuperPythonTest(unittest.TestCase):
 
     def setUp(self):
-
-        class Gui(object):
-            def __init__(self, x=0):
-                self.svg = None
-                self.html = None
-                self.ajax = None
-
-
-            def __getitem__(self, x):
-                return self
-
-            def __le__(self, *x):
-                pass
-
-            def setAttribute(self, *x):
-                self.opacity = 0.5
-
-            def image(self, *x, **kw):
-                return self
-
-            def svg(self, *x, **kw):
-                return self
-       
-        self.gui = Gui()
-        self.app = SuperPython(self.gui)
+        self.gui = MagicMock()
+        self.app = SuperPython(self.gui, self.gui, self.gui)
 
     def test_main(self):
         """garante que intância de SuperPython é criada."""
-        sp = main(self.gui)
+        sp = main(self.gui, self.gui, self.gui)
         assert sp is not None
 
 

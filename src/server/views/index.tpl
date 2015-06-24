@@ -84,8 +84,25 @@ Super Python - User Programming Interface
             %end
 
         </div>
-        <div style="position:absolute; left:0px; top:0px;">
-            <img src="/images/selector.png"></img>
+        <div id="mask" style="position:absolute; left:0px; top:0px;">
+            <img src="/images/selector.png"/>
+        </div>
+        <div id="selector" style="position:absolute; left:0px; top:0px;">
+            <form id="select" method="post" action="main/editor">
+            <svg width="800" height="800">
+                % for item, sel in enumerate(selector):
+                    <circle r="40px" cx="{{ 70+sel.x }}" cy="{{ 70+sel.y }}" onclick="submitform({{ item }})"></circle>
+                %end
+            </svg>
+                <input id="module" name="module" type="hidden"/>
+                <script type="text/javascript">
+                function submitform(item)
+                {
+                  document.getElementById('module').value = item
+                  document.forms["select"].submit();
+                }
+                </script>
+            </form>
         </div>
     </div>
 
