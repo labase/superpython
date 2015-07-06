@@ -17,12 +17,15 @@ handlers:
   static_files: static/\1
   upload: static/(.*\.js)
 
+- url: /external/brython/Lib/(site-packages/.*\.py)
+  script: src.bottle
+
 - url: /(external.*\.py)
   mime_type: text/plain
   static_files: static/\1
   upload: static/(.*\.py)
 
-- url: /(super.*\.py)
+- url: /main/(super.*\.py)
   mime_type: text/plain
   static_files: src/client/\1
   upload: src/client/(.*\.py)

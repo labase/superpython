@@ -19,13 +19,27 @@
 
         <script type="text/python">
             from javascript import JSObject
-            from browser import window, document
-            import browser
+            from browser import window, document, svg, html
+            class Browser:
+                svg = svg
+                html = html
+                doc = document #  ["main"]
+                window = window
             from superpython import main
-            main(browser, document["main"], JSObject(window.ace)).main()
+            main(Browser, JSObject(window.ace), "{{ projeto }}").main()
         </script>
     </head>
-    <body>
-        <div id="main"></div>
+    <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">
+        <div id="main"  style="position: relative; width: 100%; height: 100%;">
+            <div id="game"  style="position: absolute; width: 100%; height: 100%;"></div>
+            <div id="edit"  style="position: absolute; width: 100%; height: 100%; margin: 0 auto;"></div>
+            <div id="control" style="position: absolute; width: 90px; height: 40px; right: -30px; top: -8px;">
+                <img id="menu" src="/images/menu.png" alt="menu" title="menu" width="30px"/>
+                <img id="run" src="/images/run.png" alt="run" title="run" width="30px"/>
+            </div>
+            <div id="console"  style="position: absolute; width: 100%; height: 40px; right: -30px; bottom: -8px;">
+                <textarea id="pyconsole" style="background:white;width:98%;height:98%" readonly></textarea>
+            </div>
+        </div>
     </body>
 </html>

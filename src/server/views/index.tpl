@@ -79,7 +79,7 @@ Super Python - User Programming Interface
             % for proj in result:
                 <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y }}px;"> <!--id="{{ 'item' + "".join(proj.name.split()) }}">-->
                     <span>{{ proj.name }}</span><br/>
-                    <img src="{{ proj.picture }}" />
+                    <img src="{{ proj.picture }}" title="{{ proj.name }}"/>
                 </div>
             %end
 
@@ -91,7 +91,8 @@ Super Python - User Programming Interface
             <form id="select" method="post" action="main/editor">
             <svg width="800" height="800">
                 % for item, sel in enumerate(selector):
-                    <circle r="40px" cx="{{ 70+sel.x }}" cy="{{ 70+sel.y }}" onclick="submitform({{ item }})"></circle>
+                    <circle r="40px" cx="{{ 70+sel.x }}" cy="{{ 70+sel.y }}"
+                            onclick="submitform({{ item }})" title="{{ item }}"></circle>
                 %end
             </svg>
                 <input id="module" name="module" type="hidden"/>

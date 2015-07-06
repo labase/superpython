@@ -25,7 +25,7 @@ SuperPython - Pacote Principal
 Define a classe SuperPython.
 
 """
-import traceback
+import traceback, sys
 GUI = None
 
 
@@ -35,36 +35,61 @@ class SuperPython:
     :param browser: Referência ao módulo navegador do Brython
     """
 
-    def __init__(self, browser, canvas, edit):
+    def __init__(self, browser, edit, project):
         """Constroi os objetos iniciais. """
         global GUI
-        self.canvas, self.edit = canvas, edit
+        self.edit, self.project = edit, project
         self.gui = GUI = browser
+        self.canvas = browser.doc["edit"]
+        self.container = browser.doc["main"]
+
+        def _canvasresize(_=0):
+            _height = self.gui.doc.documentElement.clientHeight
+            self.canvas.style.height = '%spx' % int(_height * 0.90)
+            self.gui.doc["console"].style.top = _height * 0.90
+            _width = self.gui.doc.documentElement.clientWidth
+            _swidth = min(_width, 1000)
+            self.canvas.style.width = '%spx' % int(_swidth)
+            self.container.style.width = '%spx' % int(_swidth)
+
         self.svg = browser.svg
         self.html = browser.html
-        self.ajax = browser.ajax
+        # self.ajax = browser.ajax
         self.svgcanvas = self.cursor = self.icon = self.menu = self.back = self.div = None
         self.load = self.save = lambda ev: None
         self.dim = (800, 600)
         self._tabcount = 0
-        # self._editors = []
-        self._editors = None
-        self._pyconsole = self.html.DIV()
-        self._editordiv = self.html.DIV(id="%s", Class="editclass", style={"width": "100%%", "height": "100%%"})
+        self._editors = {}
+        self._pyconsole = browser.doc["pyconsole"]
+        self._editordiv = self.html.DIV()
+
+        self.canvas.html = '<div id="%s" class="editclass" style="width: 100%%; height: 100%%">ola</div>' % project
+        self.gui.window.addEventListener('resize', _canvasresize, True)
+        #self.gui.doc["run"].addEventListener('click', lambda x=0: self.write(x)) #self.run, True)
+        self.gui.doc["run"].onclick = self.run
+        _canvasresize()
 
     def main(self):
+        # self.canvas <= self._editordiv
+        print(self.canvas, self._editordiv)
         self.add_editor()
+        return
+        sys.stdout.write = self.write
+        sys.stderr.write = self.write
+
+    def write(self, data):
+        self._pyconsole.value += '%s' % data
 
     def add_editor(self, filename=None):
         if filename is None:
             filename = "Untitled-%s" % self._tabcount
             self._tabcount += 1
         # add ace editor to filename pre tag
-        _editor = self.edit.edit(filename)
-        self._editordiv <= _editor
+        _editor = self.edit.edit(self.project)
         _session = _editor.getSession()
         _session.setMode("ace/mode/python")
-        # _editor.setTheme("ace/theme/crimson_editor")
+        #return
+        #_editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
         # _session.setUseWrapMode(true)
         # _session.setTabSize(4)
@@ -76,9 +101,9 @@ class SuperPython:
         })
         _editor.focus()
 
-        self._editors[filename] = _editor
+        self._editors[self.project] = _editor
         # set resize
-        # document[filename].bind('resize', lambda x: self._editors[filename].resize(True))
+        self.gui.doc[self.project].bind('resize', lambda x: self._editors[self.project].resize(True))
 
     """# region Description
     import sys
@@ -103,10 +128,12 @@ class SuperPython:
     # endregion
     """
 
-    def run(self):
+    def run(self, _=0):
         # find selected Tab (and get its contents)
+        print(self._pyconsole.value, self.project, self._editors)
         self._pyconsole.value = ''
-        src = self._editors.getCurrentText()
+        src = self._editors[self.project].getValue()  # .getCurrentText()
+        print(src)
         # t0 = time.perf_counter()
         try:
             exec(src, globals())
