@@ -35,8 +35,8 @@ bottle.DEBUG = True
 bottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
-bottle.mount("/pontos", main_controller.bottle)
-bottle.mount("/projeto", project_controller.bottle)
+# bottle.mount("/pontos", main_controller.bottle)
+bottle.mount("/external", project_controller.bottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
 bottle.mount("/main", main_controller.bottle)

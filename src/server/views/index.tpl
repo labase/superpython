@@ -25,10 +25,6 @@ Super Python - User Programming Interface
     <script type="text/python" src="libs/importhooks/localstorage.py"></script>
     <script type="text/python" src="libs/importhooks/custom_VFS.py"></script>
     <script type="text/python">
-    from browser import window
-    from browser import doc, svg
-    from superpython import main
-    # main(doc,svg)
     </script>
         <style>
             body, html {

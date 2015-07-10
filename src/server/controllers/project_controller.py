@@ -21,34 +21,20 @@
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request, response
-LAST = None
-PROJECTS = "jardim spy super geo".split()
-#FAKE = [{k: 10*i+j for j, k in enumerate(HEAD)} for i in range(4)]
+from lib.bottle import Bottle, HTTPError, view, request, response
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
 
 
-@bottle.get('/')
-@view('projeto')
-def handle(author):
-    project = request.get_cookie('_spy_project_')
-    response.set_cookie('_spy_project_', project+author)
+@bottle.get('/<pypath:path>')
+def handle(pypath):
+    # project = request.get_cookie('_spy_project_')
+    print('/<pypath:path>', pypath)
+    if "project" in pypath:
+        if "__init__" in pypath:
+            return "\n"
+        if "project/carlo" in pypath:
+            return "main = 142857"
 
-    try:
-        record_id = LAST
-        if record_id is None:
-            raise Exception()
-        '''
-        print('resultado', record_id)
-        record = database.DRECORD[record_id]
-        record = record[PEC]
-        print('record resultado:', record)
-        return dict(user=record_id, result=record)
-        '''
-    except Exception:
-        # return dict(user="FAKE", result=FAKE)
-        fake = dict(user="FAKE", result=FAKE)
-        # print('score', fake)
-        return fake
+    raise HTTPError(404, "No such board.")

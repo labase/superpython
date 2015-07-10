@@ -48,7 +48,7 @@ class SuperPython:
             self.canvas.style.height = '%spx' % int(_height * 0.90)
             self.gui.doc["console"].style.top = _height * 0.90
             _width = self.gui.doc.documentElement.clientWidth
-            _swidth = min(_width, 1000)
+            _swidth = min(_width + 100, 1000)
             self.canvas.style.width = '%spx' % int(_swidth)
             self.container.style.width = '%spx' % int(_swidth)
 
@@ -70,10 +70,7 @@ class SuperPython:
         _canvasresize()
 
     def main(self):
-        # self.canvas <= self._editordiv
-        print(self.canvas, self._editordiv)
         self.add_editor()
-        return
         sys.stdout.write = self.write
         sys.stderr.write = self.write
 
@@ -81,9 +78,6 @@ class SuperPython:
         self._pyconsole.value += '%s' % data
 
     def add_editor(self, filename=None):
-        if filename is None:
-            filename = "Untitled-%s" % self._tabcount
-            self._tabcount += 1
         # add ace editor to filename pre tag
         _editor = self.edit.edit(self.project)
         _session = _editor.getSession()
@@ -130,10 +124,10 @@ class SuperPython:
 
     def run(self, _=0):
         # find selected Tab (and get its contents)
-        print(self._pyconsole.value, self.project, self._editors)
+        # print(self._pyconsole.value, self.project, self._editors)
         self._pyconsole.value = ''
         src = self._editors[self.project].getValue()  # .getCurrentText()
-        print(src)
+        # print(src)
         # t0 = time.perf_counter()
         try:
             exec(src, globals())
