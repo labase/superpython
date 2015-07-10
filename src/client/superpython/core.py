@@ -69,21 +69,21 @@ class SuperPython:
         self.gui.doc["run"].onclick = self.run
         _canvasresize()
 
-    def main(self):
-        self.add_editor()
+    def main(self, code=""):
+        self.add_editor(code)
         sys.stdout.write = self.write
         sys.stderr.write = self.write
 
     def write(self, data):
         self._pyconsole.value += '%s' % data
 
-    def add_editor(self, filename=None):
+    def add_editor(self, code=None):
         # add ace editor to filename pre tag
         _editor = self.edit.edit(self.project)
         _session = _editor.getSession()
         _session.setMode("ace/mode/python")
-        #return
-        #_editor.setTheme("ace/theme/cobalt")
+        _editor.setValue(code)
+        _editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
         # _session.setUseWrapMode(true)
         # _session.setTabSize(4)

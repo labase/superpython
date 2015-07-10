@@ -25,6 +25,7 @@ resources your app exposes to clients.
 """
 __author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response
+from ..models.code_store import DB
 import collections
 
 Item = collections.namedtuple('Item', 'name picture x y')
@@ -58,9 +59,13 @@ def home():
 @view('projeto')
 def home():
     """ Return Hello World at application root URL"""
-    project = request.urlparts.geturl().split('/')[2].split('.')[0]
-    prj = request.forms.get('module')
+    project = request.urlparts.geturl().split('/')[2].split('.')[0] or "superpython"
+    project = project if project in PROJECTS else "superpython"
+    person = request.forms.get('module')
+    # DB._populate_person(project, "", ["projeto%d" % d for d in range(30)])
+    cursession, lastsession = DB.login(project, "projeto%s" % person)
+    lastcodename, lastcodetext = DB.lastcode(lastsession)
 
     if project in PROJECTS:
-        response.set_cookie('_spy_project_', project)
-    return dict(projeto="projeto%s" % prj)
+        response.set_cookie('_spy_project_', project, cursession.name)
+    return dict(projeto="projeto%s" % person, codename=lastcodename, codetext=lastcodetext)

@@ -26,7 +26,7 @@ handler.
 from lib import bottle
 from lib.bottle import Bottle, redirect
 # name and list your controllers here so their routes become accessible.
-from server.controllers import main_controller, project_controller
+from server.controllers import main_controller, project_controller, code_controller
 # Enable debugging, which gives us tracebacks
 bottle.DEBUG = True
 
@@ -40,7 +40,7 @@ bottle.mount("/external", project_controller.bottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
 bottle.mount("/main", main_controller.bottle)
-# bottle.mount("/projeto", project_controller.bottle)
+bottle.mount("/code", code_controller.bottle)
 # bottle.mount("/pontos", pontos_controller.bottle)
 
 

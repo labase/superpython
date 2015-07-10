@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>Superpython : {{ projeto }}</title>
+        <title>Superpython : {{ projeto }}-{{ codename }}</title>
         <link rel="stylesheet" href="/style.css" type="text/css" />
         <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
         <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
@@ -19,14 +19,15 @@
 
         <script type="text/python">
             from javascript import JSObject
-            from browser import window, document, svg, html
+            from browser import window, document, svg, html, ajax
             class Browser:
                 svg = svg
                 html = html
                 doc = document #  ["main"]
                 window = window
+                ajax = ajax
             from superpython import main
-            main(Browser, JSObject(window.ace), "{{ projeto }}").main()
+            main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codetext }}")
         </script>
     </head>
     <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">
@@ -38,7 +39,8 @@
                 <img id="run" src="/images/run.png" alt="run" title="run" width="30px"/>
             </div>
             <div id="console"  style="position: absolute; width: 100%; height: 40px; right: -10px; bottom: -8px;">
-                <textarea id="pyconsole" style="background:white;width:98%;height:98%" readonly></textarea>
+                <textarea id="pyconsole" style="background:white;width:98%;height:98%" readonly>
+                </textarea>
             </div>
         </div>
     </body>
