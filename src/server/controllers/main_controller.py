@@ -23,14 +23,18 @@ Change this file's name and contents as appropriate to the
 resources your app exposes to clients.
 
 """
+import json
+
 __author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response
-from ..models.code_store import DB
+# from ..models.code_store import DB
+from ..models import code_store as cs
 import collections
 
 Item = collections.namedtuple('Item', 'name picture x y')
 Par = collections.namedtuple('Par', 'x y')
 PICTURE = "http://www.floresjardim.com/imagens/bd/rosaazul.jpg"
+PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedonia1.png"
 PROJECTS = "jardim spy super geo".split()
 IPOS = [Par(100, 0), Par(260, -15), Par(400, -15), Par(550, 0),
         Par(60, 110), Par(220, 110), Par(440, 110), Par(600, 110),
@@ -47,25 +51,36 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 @bottle.get('/')
 @view('index')
 def home():
-    """ Return Hello World at application root URL"""
-    project = request.urlparts.geturl().split('/')[2].split('.')[0]
-    if project in PROJECTS:
-        response.set_cookie('_spy_project_', project)
+    """ Return User Selection at application root URL"""
+    project = request.urlparts.hostname.split('.')
+    project = project if project and (project[0] in PROJECTS) else "superpython"
     items = ITEMS
-    return dict(user="fake: %s" % project, result=items, selector=IPOS)
+    return dict(user="fake: %s" % project, result=items, selector=IPOS[:2])
 
 
 @bottle.post('/editor')
 @view('projeto')
-def home():
+def edit():
+    """ Return Project editor"""
+    project = request.urlparts.hostname.split('.')
+    project = project if project and (project[0] in PROJECTS) else "superpython"
+    person = request.forms.get('module')
+    # DB._populate_person(project, "", ["projeto%d" % d for d in range(30)])
+    cursession, lastsession = cs.DB.login(project, "projeto%s" % person)
+    lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
+    response.set_cookie('_spy_project_', project, cursession.name)
+    return dict(projeto="projeto%s" % person, codename=lastcodename, codetext=lastcodetext)
+
+
+@bottle.post('/save')
+def save():
     """ Return Hello World at application root URL"""
     project = request.urlparts.geturl().split('/')[2].split('.')[0] or "superpython"
     project = project if project in PROJECTS else "superpython"
-    person = request.forms.get('module')
-    # DB._populate_person(project, "", ["projeto%d" % d for d in range(30)])
-    cursession, lastsession = DB.login(project, "projeto%s" % person)
-    lastcodename, lastcodetext = DB.lastcode(lastsession)
-
-    if project in PROJECTS:
-        response.set_cookie('_spy_project_', project, cursession.name)
-    return dict(projeto="projeto%s" % person, codename=lastcodename, codetext=lastcodetext)
+    cookie = request.get_cookie('_spy_project_')
+    codej = request.json
+    # code = json.loads(codej)
+    # print("code", code["usr"], code["title"], project, cookie)
+    print("code", codej["name"], project, cookie)
+    cs.DB.save(**codej)
+    return "file saved"

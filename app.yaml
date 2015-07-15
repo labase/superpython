@@ -18,7 +18,7 @@ handlers:
   upload: static/(.*\.js)
 
 - url: /external/brython/Lib/site-packages/project.*\.py
-  script: src.bottle
+  script: src.appbottle
 
 - url: /(external.*\.py)
   mime_type: text/plain
@@ -41,7 +41,7 @@ handlers:
   upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png|svg))
 
 - url: .*  # This regex directs all routes to main.app
-  script: src.bottle
+  script: src.appbottle
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See

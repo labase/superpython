@@ -123,6 +123,10 @@ class Code(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     text = ndb.TextProperty(indexed=False)
 
+    def set_text(self, value):
+        self.text = value
+        self.put()
+
     @classmethod
     def create(cls, **kwargs):
         instance = cls(**kwargs)
@@ -135,8 +139,9 @@ class Code(ndb.Model):
         return query and query[0]
 
     @classmethod
-    def obtain(cls, name):
-        return Code.nget(name=name)
+    def obtain(cls, person, name, text):
+        personk = Person.nget(person)
+        return Code.nget(name=name) or Code.create(person=personk.key, name=name, text=text)
 
 
 class Error(ndb.Model):
@@ -167,16 +172,18 @@ class Session(ndb.Expando):
         return query and query[0]
 
     @classmethod
-    def check(cls, project, name):
-        project_obj = Project.nget(name=project)
-        person_obj = Person.nget(name=name)
-        # author_obj = Author.nget(person=person_obj, project=project_obj)
-        return project_obj and project_obj and Author.nget(project=project_obj.key, person=person_obj.key)
-
-    @classmethod
     def create(cls, **kwargs):
         instance = cls(**kwargs)
         instance.put()
+        return instance
+
+    @classmethod
+    def save(cls, project, person, name, code):
+        person = Person.nget(person)
+        project = Project.nget(project)
+        code = Code.obtain(person, name)
+        code.set_text(code)
+        code.put()
         return instance
 
     @classmethod
@@ -214,6 +221,19 @@ class Session(ndb.Expando):
         return oquestions
 
     @classmethod
+    def init_db_(cls):
+
+        if "AUTH_DOMAIN" not in os.environ.keys():
+            return
+
+        prj = Project.nget(name="superpython")
+        if prj == []:
+            prj = Project.create(name="superpython")
+        persons = ["projeto%d" % d for d in range(20)]
+        ses = Session.create(name=uuid1().hex, project=prj.key)
+        Session._populate_persons(prj, ses, persons)
+
+    @classmethod
     def _populate_persons(cls, project, session, persons):
         prj = session.project.get()  # Project.kget(key=session.project)
         if prj.populated:
@@ -226,10 +246,6 @@ class Session(ndb.Expando):
         #  prj.persons = new_persons
         prj.put()
         return new_persons
-prj = Project.nget(name="superpython")
-if prj == []:
-    prj = Project.create(name="superpython")
-persons = ["projeto%d" % d for d in range(20)]
-ses = Session.create(name=uuid1().hex, project=prj.key)
-Session._populate_persons(prj, ses, persons)
+
+Session.init_db_()
 DB = Session

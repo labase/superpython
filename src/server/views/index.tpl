@@ -73,9 +73,9 @@ Super Python - User Programming Interface
     <div id="banner">
         <div id="menu" style="position:absolute; left:0px; top:0px;">
             % for proj in result:
-                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y }}px;"> <!--id="{{ 'item' + "".join(proj.name.split()) }}">-->
+                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y+15 }}px;"> <!--id="{{ 'item' + "".join(proj.name.split()) }}">-->
                     <span>{{ proj.name }}</span><br/>
-                    <img src="{{ proj.picture }}" title="{{ proj.name }}"/>
+                    <img src="{{ proj.picture }}" width="80px" title="{{ proj.name }}"/>
                 </div>
             %end
 

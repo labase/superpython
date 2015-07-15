@@ -27,7 +27,7 @@
                 window = window
                 ajax = ajax
             from superpython import main
-            main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codetext }}")
+            main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}", "{{ codetext }}")
         </script>
     </head>
     <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">

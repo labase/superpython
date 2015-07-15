@@ -26,6 +26,7 @@ Define a classe SuperPython.
 
 """
 import traceback, sys
+import json
 GUI = None
 
 
@@ -54,9 +55,9 @@ class SuperPython:
 
         self.svg = browser.svg
         self.html = browser.html
-        # self.ajax = browser.ajax
-        self.svgcanvas = self.cursor = self.icon = self.menu = self.back = self.div = None
-        self.load = self.save = lambda ev: None
+        self.ajax = browser.ajax
+        self.svgcanvas = self.cursor = self.icon = self.menu = self.back = self.div = self.name = None
+        # self.load = self.save = lambda ev: None
         self.dim = (800, 600)
         self._tabcount = 0
         self._editors = {}
@@ -65,11 +66,14 @@ class SuperPython:
 
         self.canvas.html = '<div id="%s" class="editclass" style="width: 100%%; height: 100%%">ola</div>' % project
         self.gui.window.addEventListener('resize', _canvasresize, True)
-        #self.gui.doc["run"].addEventListener('click', lambda x=0: self.write(x)) #self.run, True)
         self.gui.doc["run"].onclick = self.run
+        self.gui.doc["menu"].onclick = self.save
         _canvasresize()
+        """
+        """
 
-    def main(self, code=""):
+    def main(self, name="", code=""):
+        self.name = name
         self.add_editor(code)
         sys.stdout.write = self.write
         sys.stderr.write = self.write
@@ -83,7 +87,8 @@ class SuperPython:
         _session = _editor.getSession()
         _session.setMode("ace/mode/python")
         _editor.setValue(code)
-        _editor.setTheme("ace/theme/cobalt")
+
+        # _editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
         # _session.setUseWrapMode(true)
         # _session.setTabSize(4)
@@ -94,35 +99,23 @@ class SuperPython:
             'highlightSelectedWord': True
         })
         _editor.focus()
-
+        # return
         self._editors[self.project] = _editor
         # set resize
         self.gui.doc[self.project].bind('resize', lambda x: self._editors[self.project].resize(True))
 
-    """# region Description
-    import sys
-    import json
-    import urllib.request
-    import time
-
-    #this import causes loading to slow down.  See email
-    # to Pierre on Dec 4th, 2014 for details..
-    #import urllib.parse
-
-    import editor
-    editors=editor.Editor('editortabs')
-
-    sys.path.append('libs/FileSystem')
-    import FileObject
-
-    _jquery=JSObject(window.jQuery)
-    display_message=JSObject(window.display_message)
-
-    sharelist={}
-    # endregion
-    """
-
     def run(self, _=0):
+        self._pyconsole.value = ''
+        src = self._editors[self.project].getValue()  # .getCurrentText()
+        try:
+            exec(src, globals())
+            state = 1
+        except Exception as _:
+            traceback.print_exc()
+            state = 0
+        return state
+
+    def save(self, _=0):
         # find selected Tab (and get its contents)
         # print(self._pyconsole.value, self.project, self._editors)
         self._pyconsole.value = ''
@@ -130,8 +123,15 @@ class SuperPython:
         # print(src)
         # t0 = time.perf_counter()
         try:
-            exec(src, globals())
+            jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
+
+            req = self.ajax.ajax()
+            req.open('POST', "save")  # , async=False)
+            req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
+            req.send(jsrc)
+
             state = 1
+            print("save", jsrc)
         except Exception as _:
             traceback.print_exc()
             state = 0

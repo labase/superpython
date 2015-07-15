@@ -32,15 +32,15 @@ bottle.DEBUG = True
 
 # Run the Bottle wsgi application. We don't need to call run() since our
 # application is embedded within an App Engine WSGI application server.
-bottle = Bottle()
+appbottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
 # bottle.mount("/pontos", main_controller.bottle)
-bottle.mount("/external", project_controller.bottle)
+appbottle.mount("/external", project_controller.bottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
-bottle.mount("/main", main_controller.bottle)
-bottle.mount("/code", code_controller.bottle)
+appbottle.mount("/main", main_controller.bottle)
+appbottle.mount("/code", code_controller.bottle)
 # bottle.mount("/pontos", pontos_controller.bottle)
 
 
