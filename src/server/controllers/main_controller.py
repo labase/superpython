@@ -75,12 +75,13 @@ def edit():
 @bottle.post('/save')
 def save():
     """ Return Hello World at application root URL"""
-    project = request.urlparts.geturl().split('/')[2].split('.')[0] or "superpython"
-    project = project if project in PROJECTS else "superpython"
+    project = request.urlparts.hostname.split('.')
+    project = project if project and (project[0] in PROJECTS) else "superpython"
     cookie = request.get_cookie('_spy_project_')
     codej = request.json
     # code = json.loads(codej)
     # print("code", code["usr"], code["title"], project, cookie)
-    print("code", codej["name"], project, cookie)
-    cs.DB.save(**codej)
+    codedict = {str(k): str(v) for k, v in codej.items()}
+    print("code", codej["name"], project, cookie, codej, codedict)
+    cs.DB.save( **codedict)
     return "file saved"

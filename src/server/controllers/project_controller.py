@@ -22,6 +22,7 @@
 """
 __author__ = 'carlo'
 from lib.bottle import Bottle, HTTPError, view, request, response
+from ..models import code_store as cs
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -31,10 +32,15 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 def handle(pypath):
     # project = request.get_cookie('_spy_project_')
     print('/<pypath:path>', pypath)
+    code = cs.DB.load(name=pypath)
+    if code:
+        return code
+    '''
     if "project" in pypath:
         if "__init__" in pypath:
             return "\n"
         if "project/carlo" in pypath:
             return "main = 142857"
+            '''
 
     raise HTTPError(404, "No such board.")

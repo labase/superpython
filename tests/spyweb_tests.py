@@ -88,6 +88,7 @@ class SpyWebTest(unittest.TestCase):
         cs.DB.save = MagicMock(name="dblc")
         cs.DB.save.side_effect = lambda *a, **args: 'lastcodename lastcodetext'.split()
         response = app.post_json('/main/save', dict(person="projeto0", name="main", text="# main"))
+        cs.DB.save.assert_called_once_with(text=u'# main', name=u'main', person=u'projeto0')
         self.assertEqual('200 OK', response.status)
         self.assertTrue('file saved' in response)
 

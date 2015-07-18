@@ -140,8 +140,16 @@ class Code(ndb.Model):
 
     @classmethod
     def obtain(cls, person, name, text):
-        personk = Person.nget(person)
-        return Code.nget(name=name) or Code.create(person=personk.key, name=name, text=text)
+        print("codeobtain", dict(person=person, name=name, text=text))
+        person = Person.nget(person)
+        print(dict(person=person.key, name=name, text=text))
+        code = Code.nget(name=name)
+        if code:
+            code.set_text(text)
+            code.put()
+        else:
+            code = Code.create(person=person.key, name=name, text=text)
+        return code
 
 
 class Error(ndb.Model):
@@ -178,13 +186,17 @@ class Session(ndb.Expando):
         return instance
 
     @classmethod
-    def save(cls, project, person, name, code):
-        person = Person.nget(person)
-        project = Project.nget(project)
-        code = Code.obtain(person, name)
-        code.set_text(code)
-        code.put()
-        return instance
+    def load(cls, name):
+        path = name.split("/")
+        if Person.nget(path[0]) and "__init__" in path[1]:
+            return "#"
+        code = Code.nget(name=name)
+        return code.text
+
+    @classmethod
+    def save(cls, **kwargs):
+        code = Code.obtain(**kwargs)
+        return code
 
     @classmethod
     def login(cls, project, person):
@@ -195,15 +207,16 @@ class Session(ndb.Expando):
         lastsession = person.lastsession
 
         cursession = cls.create(project=project.key, person=person.key, name=sessionname)
+
         person.updatesession(cursession.key)
         #  cls._populate_persons(project, cursession, persons)
         return cursession, lastsession
 
     @classmethod
     def lastcode(cls, lastsession):
-        # lastcode = Session.nget(lastsession).code
-        lastcode = lastsession.get().code
-        code = (lastcode.name, lastcode.text) if lastcode else ("main.py", "# main")
+        session = lastsession.get()
+        lastcode = session.code
+        code = (lastcode.name, lastcode.text) if lastcode else ("%s/main.py" % session.person.get().name, "# main")
         return code
 
     @classmethod
