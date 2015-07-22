@@ -26,25 +26,16 @@
 __author__ = 'carlo'
 # Imports the NDB data modeling API
 import os
-import sys
 from uuid import uuid1
-
-if "AUTH_DOMAIN" in os.environ.keys():
-    from google.appengine.ext import ndb
-else:
-    from lib.minimock import Mock
-    sys.modules['google.appengine.ext'] = Mock('google.appengine.ext')
-    ndb = Mock('google.appengine.ext')
-
-# import googledatastore as ndb
+import database as dbs
 
 DEFAULT_PROJECTS = "DEFAULT_PROJECTS"
 DEFAULT_PROJECT_NAMES = "JardimBotanico SuperPlataforma SuperPython MuseuGeo"
 
 
-class Program(ndb.Expando):
+class Program(dbs.NDB.Expando):
     """A main model for representing all projects."""
-    name = ndb.StringProperty(indexed=True)
+    name = dbs.NDB.StringProperty(indexed=True)
 
     @classmethod
     def create(cls, **kwargs):
@@ -56,28 +47,25 @@ class Program(ndb.Expando):
     def nget(cls, query):
         return query.fetch()[0] if query.fetch() else None
 
-    @classmethod
-    def instance(cls, name=DEFAULT_PROJECTS, names=DEFAULT_PROJECT_NAMES):
-        def get_project():
-            prj = cls.query(cls.name == name).fetch()
-            print("prj", prj)
-            cls._projects = prj[0] if prj else cls._start(name=name, names=names)
 
-        return cls._projects or get_project()
-
-    @classmethod
-    def _start(cls, name=DEFAULT_PROJECTS, names=DEFAULT_PROJECT_NAMES):
-        _prj = Projects.create(name=name, names=names)
-        [Project.create(project=_prj.key, name=aname, kind=DEFAULT_PROJECTS) for aname in names.split()]
-        return _prj
-
-
-class Project(ndb.Expando):
+class Project(dbs.NDB.Expando):
     """Sub model for representing an project."""
-    program = ndb.KeyProperty(kind=Program)
-    name = ndb.StringProperty(indexed=True)
-    persons = ndb.TextProperty(indexed=False)
-    populated = ndb.BooleanProperty(default=False)
+    program = dbs.NDB.KeyProperty(kind=Program)
+    name = dbs.NDB.StringProperty(indexed=True)
+    persons = dbs.NDB.TextProperty(indexed=False)
+    populated = dbs.NDB.BooleanProperty(default=False)
+    sessions = dbs.NDB.JsonProperty(default={})
+
+    def updatesession(self, person):
+        # self.sessions = set(self.sessions).add(person)
+        self.sessions[person] = True
+        self.put()
+
+    def removesession(self, person):
+        # self.sessions = set(self.sessions).remove(person)
+        self.sessions[person] = False
+        print("removesession", person, self.sessions)
+        self.put()
 
     @classmethod
     def create(cls, **kwargs):
@@ -90,12 +78,15 @@ class Project(ndb.Expando):
         query = cls.query(cls.name == name).fetch()
         return query and query[0]
 
+    def islogged(self, person):
+        return person in self.sessions and self.sessions[person]
 
-class Person(ndb.Expando):
+
+class Person(dbs.NDB.Expando):
     """Sub model for representing an author."""
-    project = ndb.KeyProperty(kind=Project)
-    name = ndb.StringProperty(indexed=True)
-    lastsession = ndb.KeyProperty(indexed=False)
+    project = dbs.NDB.KeyProperty(kind=Project)
+    name = dbs.NDB.StringProperty(indexed=True)
+    lastsession = dbs.NDB.KeyProperty(indexed=False)
 
     def updatesession(self, session):
         self.lastsession = session
@@ -117,11 +108,11 @@ class Person(ndb.Expando):
         return Person.nget(name=name) or Person.create(name=name)
 
 
-class Code(ndb.Model):
+class Code(dbs.NDB.Model):
     """A sub model for representing an individual Question entry."""
-    person = ndb.KeyProperty(kind=Person)
-    name = ndb.StringProperty(indexed=True)
-    text = ndb.TextProperty(indexed=False)
+    person = dbs.NDB.KeyProperty(kind=Person)
+    name = dbs.NDB.StringProperty(indexed=True)
+    text = dbs.NDB.TextProperty(indexed=False)
 
     def set_text(self, value):
         self.text = value
@@ -152,11 +143,11 @@ class Code(ndb.Model):
         return code
 
 
-class Error(ndb.Model):
+class Error(dbs.NDB.Model):
     """A main model for representing an individual Question entry."""
-    code = ndb.KeyProperty(kind=Code)
-    message = ndb.TextProperty(indexed=False)
-    value = ndb.IntegerProperty(indexed=False)
+    code = dbs.NDB.KeyProperty(kind=Code)
+    message = dbs.NDB.TextProperty(indexed=False)
+    value = dbs.NDB.IntegerProperty(indexed=False)
 
     @classmethod
     def create(cls, **kwargs):
@@ -165,14 +156,14 @@ class Error(ndb.Model):
         return instance
 
 
-class Session(ndb.Expando):
+class Session(dbs.NDB.Expando):
     """A main model for representing a user interactive session."""
     _session = None
-    project = ndb.KeyProperty(kind=Project)
-    person = ndb.KeyProperty(kind=Person)
-    code = ndb.KeyProperty(kind=Code)
-    name = ndb.StringProperty(indexed=True)
-    modified_date = ndb.DateTimeProperty(auto_now=True)
+    project = dbs.NDB.KeyProperty(kind=Project)
+    person = dbs.NDB.KeyProperty(kind=Person)
+    code = dbs.NDB.KeyProperty(kind=Code)
+    name = dbs.NDB.StringProperty(indexed=True)
+    modified_date = dbs.NDB.DateTimeProperty(auto_now=True)
 
     @classmethod
     def nget(cls, name):
@@ -199,17 +190,30 @@ class Session(ndb.Expando):
         return code
 
     @classmethod
+    def getlogged(cls, project):
+        return Project.nget(project).sessions
+
+    @classmethod
+    def islogged(cls, project, person):
+        project = Project.nget(project)
+        return project.islogged(person)
+
+    @classmethod
+    def logout(cls, project, person):
+        project = Project.nget(project)
+        project.removesession(person)
+
+    @classmethod
     def login(cls, project, person):
         print("project, person", project, person)
         sessionname = uuid1().hex
-        person = Person.nget(person)
         project = Project.nget(project)
-        lastsession = person.lastsession
-
+        project.updatesession(person)
+        person = Person.nget(person)
+        print("project, person", project, person)
         cursession = cls.create(project=project.key, person=person.key, name=sessionname)
-
+        lastsession = person.lastsession or cursession.key
         person.updatesession(cursession.key)
-        #  cls._populate_persons(project, cursession, persons)
         return cursession, lastsession
 
     @classmethod
@@ -234,15 +238,15 @@ class Session(ndb.Expando):
         return oquestions
 
     @classmethod
-    def init_db_(cls):
+    def init_db_(cls, persons=["projeto%d" % d for d in range(20)]):
 
         if "AUTH_DOMAIN" not in os.environ.keys():
             return
 
         prj = Project.nget(name="superpython")
-        if prj == []:
+        if not prj:
             prj = Project.create(name="superpython")
-        persons = ["projeto%d" % d for d in range(20)]
+        # persons = ["projeto%d" % d for d in range(20)]
         ses = Session.create(name=uuid1().hex, project=prj.key)
         Session._populate_persons(prj, ses, persons)
 
@@ -252,9 +256,11 @@ class Session(ndb.Expando):
         if prj.populated:
             return prj.persons
         new_persons = [
-            Person.create(project=project.key, name=key, lastsession=session.key) for key in persons
+            # Person.create(project=project.key, name=key, lastsession=session.key) for key in persons
+            Person.create(project=project.key, name=key, lastsession=None) for key in persons
             ]
         print(new_persons)
+        prj.sessions = {person: False for person in persons}
         prj.populated = True
         #  prj.persons = new_persons
         prj.put()

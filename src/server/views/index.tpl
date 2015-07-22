@@ -85,11 +85,14 @@ Super Python - User Programming Interface
         </div>
         <div id="selector" style="position:absolute; left:0px; top:0px;">
             <form id="select" method="post" action="main/editor">
-            <svg width="800" height="800">
                 % for item, sel in enumerate(selector):
-                    <circle r="40px" cx="{{ 70+sel.x }}" cy="{{ 70+sel.y }}"
-                            onclick="submitform({{ item }})" title="{{ item }}"></circle>
+                    <div id="{{ 'topper%d'%item }}"
+                         style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="submitform('{{ sel.name }}')">
+                         <img src="images/crank.png" width="100px"
+                              title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
+                    </div>
                 %end
+            <svg width="800" height="800">
             </svg>
                 <input id="module" name="module" type="hidden"/>
                 <script type="text/javascript">

@@ -39,17 +39,32 @@ class SuperPython:
     def __init__(self, browser, edit, project):
         """Constroi os objetos iniciais. """
         global GUI
+
+        def sair(ev):
+            ev.returnValue = "\o/"
+            try:
+                data = {"person": self.project}
+
+                req = self.ajax.ajax()
+                req.open('POST', "logout")  # , async=False)
+                req.set_header('content-type', 'application/x-www-form-urlencoded')
+                req.send(data)
+                print("save", data)
+            except Exception as _:
+                print("logout request error")
+            return "SAIR?"
         self.edit, self.project = edit, project
         self.gui = GUI = browser
         self.canvas = browser.doc["edit"]
         self.container = browser.doc["main"]
+        browser.window.addEventListener("beforeunload", sair)
 
         def _canvasresize(_=0):
             _height = self.gui.doc.documentElement.clientHeight
             self.canvas.style.height = '%spx' % int(_height * 0.90)
             self.gui.doc["console"].style.top = _height * 0.90
             _width = self.gui.doc.documentElement.clientWidth
-            _swidth = min(_width + 100, 1000)
+            _swidth = _width-100  # min(_width + 100, 1000)
             self.canvas.style.width = '%spx' % int(_swidth)
             self.container.style.width = '%spx' % int(_swidth)
 
@@ -133,7 +148,6 @@ class SuperPython:
             state = 1
             print("save", jsrc)
         except Exception as _:
-            traceback.print_exc()
             state = 0
 
         # print('<completed in %6.2f ms>' % ((time.perf_counter()-t0)*1000.0))
