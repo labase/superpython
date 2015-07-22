@@ -44,7 +44,7 @@ def initialize(project):
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4'])
     header = open('header.py').read()
-    project.set_property('dir_source_main_python', 'src')
+    project.set_property('dir_source_main_python', '.')
     project.set_property('dir_source_unittest_python', 'tests')
     # project.set_property('pybuilder_header_plugin_expected_header', header)
     project.set_property('pybuilder_header_plugin_break_build', True)

@@ -41,7 +41,7 @@ templates_dir = os.path.join(project_server, '../src/server/views/')
 if templates_dir not in bottle.TEMPLATE_PATH:
     bottle.TEMPLATE_PATH.insert(0, templates_dir)
 if sys.version_info[0] == 2:
-    from mock import MagicMock, patch, ANY
+    from mock import MagicMock, patch
 else:
     from unittest.mock import MagicMock, patch, ANY
 from webtest import TestApp
@@ -73,11 +73,13 @@ class SpyWebTest(unittest.TestCase):
         session.name = '2222'
         cs.DB.login = MagicMock(name="dbl")
         cs.DB.login.side_effect = lambda *a, **args: (session, 1)
+        cs.DB.islogged = MagicMock(name="dblg")
+        cs.DB.islogged.side_effect = lambda *a, **args: False
         cs.DB.lastcode = MagicMock(name="dblc")
         cs.DB.lastcode.side_effect = lambda *a, **args: 'lastcodename lastcodetext'.split()
-        response = app.post('/main/editor', dict(module="2222"))
+        response = app.post('/main/editor', dict(module="projeto2222"))
         self.assertEqual('200 OK', response.status)
-        self.assertTrue('projeto2222-lastcodename' in response)
+        self.assertTrue('projeto2222-lastcodename' in response, str(response))
 
     def test_save(self):
         app = TestApp(appbottle)
@@ -91,6 +93,28 @@ class SpyWebTest(unittest.TestCase):
         cs.DB.save.assert_called_once_with(text=u'# main', name=u'main', person=u'projeto0')
         self.assertEqual('200 OK', response.status)
         self.assertTrue('file saved' in response)
+
+    def test_import(self):
+        app = TestApp(appbottle)
+        session = MagicMock(name="dblc")
+        session.name = '2222'
+        cs.DB.load = MagicMock(name="dbl")
+        cs.DB.load.side_effect = lambda *a, **args: "#main"
+        response = app.get('/external/brython/Lib/site-packages/core.py')
+        cs.DB.load.assert_called_once_with(name='core.py')
+        self.assertEqual('200 OK', response.status)
+        self.assertTrue('#main' in response)
+
+    def test_logout(self):
+        app = TestApp(appbottle)
+        session = MagicMock(name="dblc")
+        session.name = '2222'
+        cs.DB.logout = MagicMock(name="dbl")
+        # cs.DB.load.side_effect = lambda *a, **args: "#main"
+        response = app.post('/main/logout', dict(person="projeto2222"))
+        cs.DB.logout.assert_called_once_with('superpython', 'projeto2222')
+        self.assertEqual('200 OK', response.status)
+        self.assertTrue('logout' in response)
 
 if __name__ == '__main__':
     unittest.main()
