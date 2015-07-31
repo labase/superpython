@@ -72,6 +72,7 @@ def edit():
     cursession, lastsession = cs.DB.login(project, person)
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
     response.set_cookie('_spy_project_', project, cursession.name)
+    cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
     return dict(projeto=person, codename=lastcodename, codetext=lastcodetext)
 
 

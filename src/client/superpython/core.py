@@ -25,7 +25,8 @@ SuperPython - Pacote Principal
 Define a classe SuperPython.
 
 """
-import traceback, sys
+import traceback
+import sys
 import json
 GUI = None
 
@@ -41,7 +42,7 @@ class SuperPython:
         global GUI
 
         def sair(ev):
-            ev.returnValue = "\o/"
+            ev.returnValue = "SAIR?"
             try:
                 data = {"person": self.project}
 
@@ -54,10 +55,11 @@ class SuperPython:
                 print("logout request error")
             return "SAIR?"
         self.edit, self.project = edit, project
+        #self.project = "edit"
         self.gui = GUI = browser
         self.canvas = browser.doc["edit"]
         self.container = browser.doc["main"]
-        browser.window.addEventListener("beforeunload", sair)
+        # browser.window.addEventListener("beforeunload", sair)
 
         def _canvasresize(_=0):
             _height = self.gui.doc.documentElement.clientHeight
@@ -77,21 +79,30 @@ class SuperPython:
         self._tabcount = 0
         self._editors = {}
         self._pyconsole = browser.doc["pyconsole"]
+        self._pycanvas = browser.doc["pydiv"]
         self._editordiv = self.html.DIV()
-
-        self.canvas.html = '<div id="%s" class="editclass" style="width: 100%%; height: 100%%">ola</div>' % project
         self.gui.window.addEventListener('resize', _canvasresize, True)
-        self.gui.doc["run"].onclick = self.run
+        self._run_or_code = self.run
+        self.gui.doc["run"].onclick = self.runcode
         self.gui.doc["menu"].onclick = self.save
+        print("self.__init__", self._run_or_code)
         _canvasresize()
         """
         """
 
+    def _code(self, _=0):
+        self._run_or_code = self.run
+        self._pycanvas.style.display = "none"
+
+    def runcode(self, _=0):
+        print("self._run_or_code")
+        self._run_or_code()
+
     def main(self, name="", code=""):
         self.name = name
         self.add_editor(code)
-        sys.stdout.write = self.write
-        sys.stderr.write = self.write
+        # sys.stdout.write = self.write
+        # sys.stderr.write = self.write
 
     def write(self, data):
         self._pyconsole.value += '%s' % data
@@ -119,13 +130,23 @@ class SuperPython:
         # set resize
         self.gui.doc[self.project].bind('resize', lambda x: self._editors[self.project].resize(True))
 
+    def display_canvas(self, run_or_code, display="block"):
+        self._run_or_code = run_or_code
+        self._pycanvas.style.display = display
+        from jqueryui import jq
+        jq['pydiv'].dialog(
+            dict(position={"my": "left top", "at": "left top"}, width="100%", height="100%", left="-10px", top="-8px"))
+
     def run(self, _=0):
         self._pyconsole.value = ''
         src = self._editors[self.project].getValue()  # .getCurrentText()
         try:
+            self.display_canvas(self._code, "block")
             exec(src, globals())
             state = 1
         except Exception as _:
+            self._run_or_code = self.run
+            self._pycanvas.style.display = "none"
             traceback.print_exc()
             state = 0
         return state

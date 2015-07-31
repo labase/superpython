@@ -20,10 +20,12 @@ Super Python - User Programming Interface
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" type="text/css" />
     <script type="text/javascript" src="external/brython/brython.js"></script>
+    <!--
     <script type="text/javascript" src="external/brython/py_VFS.js"></script>
     <script type="text/javascript" src="libs/custom_VFS.js"></script>
     <script type="text/python" src="libs/importhooks/localstorage.py"></script>
     <script type="text/python" src="libs/importhooks/custom_VFS.py"></script>
+    -->
     <script type="text/python">
     </script>
         <style>
