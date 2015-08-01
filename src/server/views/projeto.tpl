@@ -6,18 +6,25 @@
         <link rel="stylesheet" href="/style.css" type="text/css" />
         <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
         <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>
+        <style type="">
+            .ui-dialog{font-size: 30%;}
+            .ui-dialog-title {font-size:10px !important; margin: -0.02em 0.1em !important;}
+            .ui-dialog-titlebar {padding: 0.18em 1em !important;}
+            .ui-dialog-content {padding: 0.3em 0.99em  0.99em 0.2em !important;font-size:12px !important; }
+        </style>
+        <!--
 
         <script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/ace/mode-python3.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/ace/snippets/python.js" type="text/javascript" charset="utf-8"></script>
 
-        <script type="text/javascript" src="/external/brython/brython.js"></script>
-        <!--
         <script type="text/javascript" src="/external/brython/py_VFS.js"></script>
 
         <script type="text/javascript" src="/libs/custom_VFS.js"></script>
         -->
+        <script type="text/javascript" src="/external/brython/brython.js"></script>
 
         <script type="text/python">
             from javascript import JSObject
@@ -39,18 +46,17 @@
         <div id="main"  style="position: relative; width: 100%; height: 400px; margin: 0px auto;">
             <div id="game"  style="position: absolute; width: 100%; height: 100%;"></div>
             <div id="edit"  style="position: absolute; width: 100%; height: 100%;">
-                <div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;">ola</div>
+                <div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;">{{ codetext }}</div>
             </div>
             <div id="nopydiv"  style="position: absolute; width: 100%; height: 100%; right: -10px; bottom: -8px; display: none; z-index:100;">
                 <img id="emmenu" src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg" alt="menu" title="menu" width="600px"/>
 
             </div>
-            <div id="pydiv"  title="Superpython Canvas">
+            <div id="pydiv"  title="">
                 <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
             </div>
-            <div id="console"  style="position: absolute; width: 100%; height: 40px; right: -10px; bottom: -8px; z-index:101;">
-                <textarea id="pyconsole" style="background:white;width:98%;height:98%" readonly>
-                </textarea>
+            <div id="console">
+                <textarea id="pyconsole" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>
             </div>
             <div id="control" style="position: absolute; width: 90px; height: 40px; right: -30px; top: -8px;">
                 <img id="menu" src="/images/menu.png" alt="menu" title="menu" width="30px"/>

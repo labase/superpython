@@ -6,17 +6,6 @@ threadsafe: yes
 
 handlers:
 
-
-- url: /(.*\.css)
-  mime_type: text/css
-  static_files: static/css/\1
-  upload: static/css/(.*\.css)
-
-- url: /(.*\.js)
-  mime_type: text/javascript
-  static_files: static/\1
-  upload: static/(.*\.js)
-
 - url: /external/brython/Lib/site-packages/.*\.py
   script: src.appbottle
 
@@ -27,6 +16,16 @@ handlers:
 
 - url: /(external.*\.py)
   mime_type: text/plain
+  static_files: static/\1
+  upload: static/(.*\.py)
+
+- url: /(external.*\.css)
+  mime_type: text/css
+  static_files: static/\1
+  upload: static/(.*\.py)
+
+- url: /(external.*\.js)
+  mime_type: text/javascript
   static_files: static/\1
   upload: static/(.*\.py)
 
@@ -44,6 +43,16 @@ handlers:
 - url: /(.*\.(bmp|gif|ico|jpeg|jpg|png|svg))
   static_files: static/\1
   upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png|svg))
+
+- url: /(.*\.css)
+  mime_type: text/css
+  static_files: static/css/\1
+  upload: static/css/(.*\.css)
+
+- url: /(.*\.js)
+  mime_type: text/javascript
+  static_files: static/\1
+  upload: static/(.*\.js)
 
 - url: .*  # This regex directs all routes to main.app
   script: src.appbottle

@@ -31,81 +31,30 @@ import json
 GUI = None
 
 
-class SuperPython:
-    """Classe que define o ambiente de desenvolvimento
+class Ace:
 
-    :param browser: Referência ao módulo navegador do Brython
-    """
-
-    def __init__(self, browser, edit, project):
+    def __init__(self, browser, edit, project, code):
         """Constroi os objetos iniciais. """
-        global GUI
 
-        def sair(ev):
-            ev.returnValue = "SAIR?"
-            try:
-                data = {"person": self.project}
-
-                req = self.ajax.ajax()
-                req.open('POST', "logout")  # , async=False)
-                req.set_header('content-type', 'application/x-www-form-urlencoded')
-                req.send(data)
-                print("save", data)
-            except Exception as _:
-                print("logout request error")
-            return "SAIR?"
-        self.edit, self.project = edit, project
-        #self.project = "edit"
-        self.gui = GUI = browser
-        self.canvas = browser.doc["edit"]
-        self.container = browser.doc["main"]
-        # browser.window.addEventListener("beforeunload", sair)
-
-        def _canvasresize(_=0):
+        def _ace_editor_resize(_=0):
             _height = self.gui.doc.documentElement.clientHeight
-            self.canvas.style.height = '%spx' % int(_height * 0.90)
-            self.gui.doc["console"].style.top = _height * 0.90
+            self._ace_editor.style.height = '%spx' % int(_height)  # * 0.90)
             _width = self.gui.doc.documentElement.clientWidth
             _swidth = _width-100  # min(_width + 100, 1000)
-            self.canvas.style.width = '%spx' % int(_swidth)
-            self.container.style.width = '%spx' % int(_swidth)
-
-        self.svg = browser.svg
-        self.html = browser.html
-        self.ajax = browser.ajax
-        self.svgcanvas = self.cursor = self.icon = self.menu = self.back = self.div = self.name = None
-        # self.load = self.save = lambda ev: None
-        self.dim = (800, 600)
-        self._tabcount = 0
+            self._ace_editor.style.width = '%spx' % int(_swidth)
+            self._container.style.width = '%spx' % int(_swidth)
+        self.gui = browser
+        self._ace_editor = browser.doc["edit"]
+        self._container = browser.doc["main"]
         self._editors = {}
-        self._pyconsole = browser.doc["pyconsole"]
-        self._pycanvas = browser.doc["pydiv"]
-        self._editordiv = self.html.DIV()
-        self.gui.window.addEventListener('resize', _canvasresize, True)
-        self._run_or_code = self.run
-        self.gui.doc["run"].onclick = self.runcode
-        self.gui.doc["menu"].onclick = self.save
-        print("self.__init__", self._run_or_code)
-        _canvasresize()
-        """
-        """
+        self.edit, self.project = edit, project
 
-    def _code(self, _=0):
-        self._run_or_code = self.run
-        self._pycanvas.style.display = "none"
-
-    def runcode(self, _=0):
-        print("self._run_or_code")
-        self._run_or_code()
-
-    def main(self, name="", code=""):
-        self.name = name
+        self.gui.window.addEventListener('resize', _ace_editor_resize, True)
+        _ace_editor_resize()
         self.add_editor(code)
-        # sys.stdout.write = self.write
-        # sys.stderr.write = self.write
 
-    def write(self, data):
-        self._pyconsole.value += '%s' % data
+    def get_content(self):
+        return self._editors[self.project].getValue()
 
     def add_editor(self, code=None):
         # add ace editor to filename pre tag
@@ -114,7 +63,7 @@ class SuperPython:
         _session.setMode("ace/mode/python")
         _editor.setValue(code)
 
-        # _editor.setTheme("ace/theme/cobalt")
+        _editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
         # _session.setUseWrapMode(true)
         # _session.setTabSize(4)
@@ -128,18 +77,50 @@ class SuperPython:
         # return
         self._editors[self.project] = _editor
         # set resize
-        self.gui.doc[self.project].bind('resize', lambda x: self._editors[self.project].resize(True))
+        self._ace_editor.bind('resize', lambda x: self._editors[self.project].resize(True))
+
+
+class Console:
+    """Classe que define o console de resposta da execução
+
+    :param browser: Referência ao módulo navegador do Brython
+    """
+
+    def __init__(self, browser, ace):
+        """Constroi os objetos iniciais. """
+        self._pyconsole = browser.doc["pyconsole"]
+        self._pycanvas = browser.doc["pydiv"]
+        self._run_or_code = self.run
+        self.ace = ace
+        browser.doc["run"].onclick = self.run
+        self._owrite = sys.stdout.write
+        self._ewrite = sys.stderr.write
+        sys.stdout.write = self.write
+        sys.stderr.write = self.write
+        # print("Console.self.__init__", self._run_or_code)
+        self._pycanvas.html = '<img id="emmenu"' \
+                              ' src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg"' \
+                              ' alt="menu" title="menu" width="400px"/>'
+
+    def write(self, data):
+        self._pyconsole.value += '%s' % data
 
     def display_canvas(self, run_or_code, display="block"):
         self._run_or_code = run_or_code
-        self._pycanvas.style.display = display
+        self._pyconsole.style.display = display
         from jqueryui import jq
         jq['pydiv'].dialog(
-            dict(position={"my": "left top", "at": "left top"}, width="100%", height="100%", left="-10px", top="-8px"))
+            dict(position=dict(my="right top", at="left bottom", of="#control"),
+                 width="60%", height=400, left="-10px", top=50), show=dict(effect="fade", duration=800))
+        jq['console'].dialog(
+            dict(position=dict(my="left top", at="left bottom", of="#pydiv"), title="console",
+                 width="60%", height=200, left="-10px", top=50), show=dict(effect="fade", duration=800))
 
     def run(self, _=0):
         self._pyconsole.value = ''
-        src = self._editors[self.project].getValue()  # .getCurrentText()
+        src = self.ace.get_content()  # .getCurrentText()
+        self.display_canvas(self._code, "block")
+        # print("self._run", src)
         try:
             self.display_canvas(self._code, "block")
             exec(src, globals())
@@ -151,12 +132,54 @@ class SuperPython:
             state = 0
         return state
 
+    def _code(self, _=0):
+        self._run_or_code = self.run
+        self._pycanvas.style.display = "none"
+
+    def runcode(self, _=0):
+        # print("self._run_or_code")
+        self._run_or_code()
+
+
+class SuperPython:
+    """Classe que define o ambiente de desenvolvimento
+
+    :param browser: Referência ao módulo navegador do Brython
+    """
+
+    def __init__(self, browser, edit, project):
+        """Constroi os objetos iniciais. """
+        self.edit, self.project = edit, project
+        self.gui = browser
+        # browser.window.addEventListener("beforeunload", self.logout_on_exit)
+        self.ajax = browser.ajax
+        self.ace = self.name = self._console = None
+        browser.doc["menu"].onclick = self.save
+
+    def logout_on_exit(self, ev):
+        ev.returnValue = "SAIR?"
+        try:
+            data = {"person": self.project}
+
+            req = self.ajax.ajax()
+            req.open('POST', "logout")  # , async=False)
+            req.set_header('content-type', 'application/x-www-form-urlencoded')
+            req.send(data)
+            print("logout", data)
+        except Exception as _:
+            print("logout request error")
+        return "SAIR?"
+
+    def main(self, name="", code=""):
+        self.name = name
+        self.ace = Ace(self.gui, self.edit, self.project, code)
+        self._console = Console(self.gui, self.ace)
+
     def save(self, _=0):
-        # find selected Tab (and get its contents)
-        # print(self._pyconsole.value, self.project, self._editors)
-        self._pyconsole.value = ''
-        src = self._editors[self.project].getValue()  # .getCurrentText()
-        # print(src)
+        # print('save content-type', self.project)
+        # self._pyconsole.value = ''
+        src = self.ace.get_content()  # .getCurrentText()
+        # print('save content-type', 'application/json', src)
         # t0 = time.perf_counter()
         try:
             jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
@@ -167,7 +190,7 @@ class SuperPython:
             req.send(jsrc)
 
             state = 1
-            print("save", jsrc)
+            # print("save", jsrc)
         except Exception as _:
             state = 0
 
