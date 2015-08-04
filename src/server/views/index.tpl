@@ -89,7 +89,7 @@ Super Python - User Programming Interface
                     <div id="{{ 'topper%d'%item }}"
                          style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="submitform('{{ sel.name }}')">
                          <img src="images/crank.png" width="100px"
-                              title="{{ sel.name }}" style="opacity:{{ [0,0][sel.picture] }}"/>
+                              title="{{ sel.name }}" style="opacity:{{ [1,1][sel.picture] }}"/>
                     </div>
                 %end
             <svg width="800" height="800">

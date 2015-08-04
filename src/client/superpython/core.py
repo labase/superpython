@@ -28,6 +28,8 @@ Define a classe SuperPython.
 import traceback
 import sys
 import json
+import collections
+Dims = collections.namedtuple('Dims', 'x y w h')
 GUI = None
 
 
@@ -88,6 +90,8 @@ class Console:
 
     def __init__(self, browser, ace):
         """Constroi os objetos iniciais. """
+        self.jq_canvas = self.jq_console = None
+        self.jq_canvas_data = self.jq_console_data = None
         self._pyconsole = browser.doc["pyconsole"]
         self._pycanvas = browser.doc["pydiv"]
         self._run_or_code = self.run
@@ -106,15 +110,38 @@ class Console:
         self._pyconsole.value += '%s' % data
 
     def display_canvas(self, run_or_code, display="block"):
+        def console_resize(*_):
+            self.jq_console_data = Dims(
+                int(self.jq_console.offset().left), int(self.jq_console.offset().top),
+                self.jq_console.outerWidth(), self.jq_console.outerHeight())
+            self.jq_canvas_data = Dims(
+                int(self.jq_canvas.offset().left), int(self.jq_canvas.offset().top),
+                self.jq_canvas.outerWidth(), self.jq_canvas.outerHeight())
         self._run_or_code = run_or_code
         self._pyconsole.style.display = display
         from jqueryui import jq
-        jq['pydiv'].dialog(
-            dict(position=dict(my="right top", at="left bottom", of="#control"),
-                 width="60%", height=400, left="-10px", top=50), show=dict(effect="fade", duration=800))
-        jq['console'].dialog(
-            dict(position=dict(my="left top", at="left bottom", of="#pydiv"), title="console",
-                 width="60%", height=200, left="-10px", top=50), show=dict(effect="fade", duration=800))
+        if self.jq_canvas_data:
+            cs = self.jq_canvas_data
+            self.jq_canvas = jq['pydiv'].dialog(
+                dict(position=[cs.x, cs.y],
+                     width=cs.w, height=cs.h), show=dict(effect="fade", duration=800),
+                resizeStop=console_resize, dragStop=console_resize)
+        else:
+            self.jq_canvas = jq['pydiv'].dialog(
+                dict(position=dict(my="left top", at="left bottom", of="#control"),
+                     width="60%", height=400), show=dict(effect="fade", duration=800),
+                resizeStop=console_resize, dragStop=console_resize)
+        if self.jq_console_data:
+            cs = self.jq_console_data
+            self.jq_console = jq['console'].dialog(
+                dict(position=[cs.x, cs.y], title="console",
+                     width=cs.w, height=cs.h), show=dict(effect="fade", duration=800),
+                resizeStop=console_resize, dragStop=console_resize)
+        else:
+            self.jq_console = jq['console'].dialog(
+                dict(position=dict(my="left top", at="left bottom", of="#pydiv"), title="console",
+                     width="60%", height=200), show=dict(effect="fade", duration=800),
+                resizeStop=console_resize, dragStop=console_resize)
 
     def run(self, _=0):
         self._pyconsole.value = ''

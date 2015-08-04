@@ -36,7 +36,9 @@ PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedoni
 PROJECTS = "jardim spy super geo".split()
 IPOS = [Par(100, -5), Par(260, -19), Par(400, -19), Par(550, 0),
         Par(60, 108), Par(220, 108), Par(440, 108), Par(600, 108),
-        Par(90, 219), Par(210, 249), Par(440, 249), Par(570, 219)]
+        Par(90, 219), Par(210, 249), Par(440, 249), Par(570, 219),
+        Par(90, 319), Par(210, 349), Par(440, 349), Par(570, 319),
+        Par(90, 419), Par(210, 449), Par(440, 449), Par(570, 419)]
 BPOS = [Par(-(dx*160), -(dy*120)) for dy in range(6) for dx in range(5)]
 NAMES = "granito _ _ _ _ arenito" \
         " calcita_laranja agua_marinha amazonita _ quartzo_rosa turmalina" \
@@ -67,9 +69,9 @@ def home():
     project = project if project and (project[0] in PROJECTS) else "superpython"
     persons = cs.DB.getlogged(project)
     sorted_persons = ONAME  # sorted(persons.keys())
-    tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:12], IPOS)]
+    tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:20], IPOS)]
     items = [Item(name, persons[name], x, y, gxy(name).x, gxy(name).y)
-             for name, (x, y) in zip(sorted_persons[:12], IPOS)]
+             for name, (x, y) in zip(sorted_persons[:20], IPOS)]
     print("home: persons, tops, items", persons, tops)
     print("home: items", items)
     return dict(user="fake: %s" % project, result=items, selector=tops)  # IPOS[:2])
