@@ -71,13 +71,11 @@ Super Python - User Programming Interface
 </head>
 <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true,
                        custom_import_funcs:[import_hooks]})" background="/images/pipe_back.jpg">
-    <H1>USER: {{ user }}</H1>
     <div id="banner">
         <div id="menu" style="position:absolute; left:0px; top:0px;">
             % for proj in result:
-                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y+15 }}px;"> <!--id="{{ 'item' + "".join(proj.name.split()) }}">-->
-                    <span>{{ proj.name }}</span><br/>
-                    <img src="{{ proj.picture }}" width="80px" title="{{ proj.name }}"/>
+                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y+15 }}px;
+                    background-image: url(images/rochas.jpg); background-position: {{ proj.ox }}px {{ proj.oy }}px;">
                 </div>
             %end
 
@@ -91,7 +89,7 @@ Super Python - User Programming Interface
                     <div id="{{ 'topper%d'%item }}"
                          style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="submitform('{{ sel.name }}')">
                          <img src="images/crank.png" width="100px"
-                              title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
+                              title="{{ sel.name }}" style="opacity:{{ [0,0][sel.picture] }}"/>
                     </div>
                 %end
             <svg width="800" height="800">

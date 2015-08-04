@@ -31,6 +31,15 @@ import database as dbs
 
 DEFAULT_PROJECTS = "DEFAULT_PROJECTS"
 DEFAULT_PROJECT_NAMES = "JardimBotanico SuperPlataforma SuperPython MuseuGeo"
+OLDNA = "granito basalto pomes calcario marmore arenito" \
+        " calcita_laranja agua_marinha amazonita hematita quartzo_rosa turmalina" \
+        " citrino pirita silex ametista cristal quartzo-verde" \
+        " seixo dolomita fluorita aragonita calcita onix".split()
+NAMES = "granito arenito" \
+        " calcita_laranja agua_marinha amazonita quartzo_rosa turmalina" \
+        " citrino pirita silex ametista cristal quartzo-verde" \
+        " fluorita onix" \
+        " feldspato jaspe agata sodalita alabastro".split()
 
 
 class Program(dbs.NDB.Expando):
@@ -87,9 +96,14 @@ class Person(dbs.NDB.Expando):
     project = dbs.NDB.KeyProperty(kind=Project)
     name = dbs.NDB.StringProperty(indexed=True)
     lastsession = dbs.NDB.KeyProperty(indexed=False)
+    lastcode = dbs.NDB.KeyProperty(indexed=False)
 
     def updatesession(self, session):
         self.lastsession = session
+        self.put()
+
+    def updatecode(self, code):
+        self.lastcode = code
         self.put()
 
     @classmethod
@@ -140,6 +154,7 @@ class Code(dbs.NDB.Model):
             code.put()
         else:
             code = Code.create(person=person.key, name=name, text=text)
+        person.updatecode(code.key)
         return code
 
 
@@ -219,8 +234,18 @@ class Session(dbs.NDB.Expando):
     @classmethod
     def lastcode(cls, lastsession):
         session = lastsession.get()
-        lastcode = session.code
-        code = (lastcode.name, lastcode.text) if lastcode else ("%s/main.py" % session.person.get().name, "# main")
+        person = session.person.get()
+        lastcode = person.lastcode
+        if lastcode:
+            code = lastcode.get()
+            name = code.name if code else "nono"
+            text = code.text if code else "# empty"
+        else:
+            name = "nono"
+            text = "# empty"
+
+        print("lastcode", person.name, person.lastsession, name, text)
+        code = (name, text) if lastcode else ("%s/main.py" % session.person.get().name, "# main")
         return code
 
     @classmethod
@@ -238,7 +263,7 @@ class Session(dbs.NDB.Expando):
         return oquestions
 
     @classmethod
-    def init_db_(cls, persons=["projeto%d" % d for d in range(20)]):
+    def init_db_(cls, persons=NAMES):
 
         if "AUTH_DOMAIN" not in os.environ.keys():
             return
