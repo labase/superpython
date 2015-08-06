@@ -178,7 +178,7 @@ class SuperPython:
         """Constroi os objetos iniciais. """
         self.edit, self.project = edit, project
         self.gui = browser
-        # browser.window.addEventListener("beforeunload", self.logout_on_exit)
+        browser.window.addEventListener("beforeunload", self.logout_on_exit)
         self.ajax = browser.ajax
         self.ace = self.name = self._console = None
         browser.doc["menu"].onclick = self.save

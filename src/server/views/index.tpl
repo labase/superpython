@@ -26,8 +26,6 @@ Super Python - User Programming Interface
     <script type="text/python" src="libs/importhooks/localstorage.py"></script>
     <script type="text/python" src="libs/importhooks/custom_VFS.py"></script>
     -->
-    <script type="text/python">
-    </script>
         <style>
             body, html {
                 margin: 0;
@@ -68,6 +66,20 @@ Super Python - User Programming Interface
 
         </style>
 
+    <script type="text/python">
+        from browser import alert, document, window
+        def _request_login_if_available(user, blocked):
+            #alert("%s, %s" % (user, blocked))
+            #return
+            if blocked:
+                user_name = input("Este grupo esta em uso, digite o nome deste grupo para assumir o controle:")
+                if user_name != user:
+                    alert("Nome incorreto, login falhou.")
+                    return
+            document["module"].value = user
+            document.forms["select"].submit()
+        window._request_login_if_available = _request_login_if_available
+    </script>
 </head>
 <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true,
                        custom_import_funcs:[import_hooks]})" background="/images/pipe_back.jpg">
@@ -87,9 +99,9 @@ Super Python - User Programming Interface
             <form id="select" method="post" action="main/editor">
                 % for item, sel in enumerate(selector):
                     <div id="{{ 'topper%d'%item }}"
-                         style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="submitform('{{ sel.name }}')">
+                         style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">
                          <img src="images/crank.png" width="100px"
-                              title="{{ sel.name }}" style="opacity:{{ [1,1][sel.picture] }}"/>
+                              title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
                     </div>
                 %end
             <svg width="800" height="800">

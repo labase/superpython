@@ -30,14 +30,17 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 @bottle.get('/<pypath:path>')
 def handle(pypath):
-    # project = request.get_cookie('_spy_project_')
+    project = request.get_cookie('_spy_project_')
     print('/<pypath:path>', pypath)
     code = cs.DB.load(name=pypath)
     if code:
         return code
+    if "__init__" in pypath:
+        module = pypath.split("/")[:-1]
+        persons = cs.DB.getlogged(project)
+
     '''
     if "project" in pypath:
-        if "__init__" in pypath:
             return "\n"
         if "project/carlo" in pypath:
             return "main = 142857"

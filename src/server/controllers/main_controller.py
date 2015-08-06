@@ -27,32 +27,7 @@ __author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response, redirect
 # from ..models.code_store import DB
 from ..models import code_store as cs
-import collections
-
-Item = collections.namedtuple('Item', 'name picture x y ox oy')
-Par = collections.namedtuple('Par', 'x y')
-# PICTURE = "http://www.floresjardim.com/imagens/bd/rosaazul.jpg"
-PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedonia1.png"
-PROJECTS = "jardim spy super geo".split()
-IPOS = [Par(100, -5), Par(260, -19), Par(400, -19), Par(550, 0),
-        Par(60, 108), Par(220, 108), Par(440, 108), Par(600, 108),
-        Par(90, 219), Par(210, 249), Par(440, 249), Par(570, 219),
-        Par(90, 319), Par(210, 349), Par(440, 349), Par(570, 319),
-        Par(90, 419), Par(210, 449), Par(440, 449), Par(570, 419)]
-BPOS = [Par(-(dx*160), -(dy*120)) for dy in range(6) for dx in range(5)]
-NAMES = "granito _ _ _ _ arenito" \
-        " calcita_laranja agua_marinha amazonita _ quartzo_rosa turmalina" \
-        " citrino pirita silex ametista cristal quartzo-verde" \
-        " _ _ fluorita _ _ onix" \
-        " feldspato _ jaspe agata sodalita alabastro".split()
-# NAMES = NAMES+NAMES
-ONAME = "granito arenito" \
-        " calcita_laranja agua_marinha amazonita quartzo_rosa turmalina" \
-        " citrino pirita silex ametista cristal quartzo-verde" \
-        " fluorita onix" \
-        " feldspato jaspe agata sodalita alabastro".split()
-STEPX = 921 / 6
-STEPY = 521 / 5
+from . import project, get_project, project_visual_data
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -60,59 +35,45 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 @bottle.get('/')
 @view('index')
+@get_project
 def home():
     """ Return User Selection at application root URL"""
-    def gxy(name):
-        index = NAMES.index(name)
-        return Par(-STEPX * (index % 6), -STEPY * (index//6))
-    project = request.urlparts.hostname.split('.')
-    project = project if project and (project[0] in PROJECTS) else "superpython"
-    persons = cs.DB.getlogged(project)
-    sorted_persons = ONAME  # sorted(persons.keys())
-    tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:20], IPOS)]
-    items = [Item(name, persons[name], x, y, gxy(name).x, gxy(name).y)
-             for name, (x, y) in zip(sorted_persons[:20], IPOS)]
-    print("home: persons, tops, items", persons, tops)
-    print("home: items", items)
+    print("home project", project)
+    tops, items = project_visual_data()
     return dict(user="fake: %s" % project, result=items, selector=tops)  # IPOS[:2])
 
 
 @bottle.post('/editor')
 @view('projeto')
+@get_project
 def edit():
     """ Return Project editor"""
-    project = request.urlparts.hostname.split('.')
-    project = project if project and (project[0] in PROJECTS) else "superpython"
     person = request.forms.get('module')
-    if cs.DB.islogged(project, person):
-        redirect("/main")
-    # DB._populate_person(project, "", ["projeto%d" % d for d in range(30)])
+    # if cs.DB.islogged(project, person):
+    #     redirect("/main")
     cursession, lastsession = cs.DB.login(project, person)
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
-    response.set_cookie('_spy_project_', project, cursession.name)
-    cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
+    print(""" Return Project editor""", lastcodetext)
+    response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
+    # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
     return dict(projeto=person, codename=lastcodename, codetext=lastcodetext)
 
 
 @bottle.post('/save')
+@get_project
 def save():
     """ Save given file into datastore"""
-    project = request.urlparts.hostname.split('.')
-    project = project if project and (project[0] in PROJECTS) else "superpython"
-    cookie = request.get_cookie('_spy_project_')
     codej = request.json
     codedict = {str(k): str(v) for k, v in codej.items()}
-    print("code", codej["name"], project, cookie, codej, codedict)
+    print("code", codej["name"], project, codej, codedict)
     cs.DB.save(**codedict)
     return "file saved"
 
 
 @bottle.post('/logout')
+@get_project
 def logout():
     """ Logout from session"""
-    project = request.urlparts.hostname.split('.')
-    project = project if project and (project[0] in PROJECTS) else "superpython"
-    # cookie = request.get_cookie('_spy_project_')
     person = request.forms.get('person')
     cs.DB.logout(project, person)
     return "logout"
