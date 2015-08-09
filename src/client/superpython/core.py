@@ -29,6 +29,8 @@ import traceback
 import sys
 import json
 import collections
+from html.parser import HTMLParser
+HTMLParser().unescape("print(&quot;granito&quot;)")
 Dims = collections.namedtuple('Dims', 'x y w h')
 GUI = None
 
@@ -50,10 +52,11 @@ class Ace:
         self._container = browser.doc["main"]
         self._editors = {}
         self.edit, self.project = edit, project
+        self.unescape = HTMLParser().unescape
 
         self.gui.window.addEventListener('resize', _ace_editor_resize, True)
         _ace_editor_resize()
-        self.add_editor(code)
+        self.add_editor(self.unescape(code))
 
     def get_content(self):
         return self._editors[self.project].getValue()

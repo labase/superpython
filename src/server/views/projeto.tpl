@@ -29,8 +29,15 @@
         <script type="text/python">
             from javascript import JSObject
             from browser import window, document, html, ajax, svg
+            from urllib.parse import unquote
             #from jqueryui import jq
             #jq['pydiv'].dialog()
+            #cvt = unquote
+            def cvt(t):
+                u = unquote(t)
+                print("cvt", t, u)
+                document
+                return u
             class Browser:
                 svg = svg
                 html = html
@@ -45,15 +52,18 @@
     <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">
         <div id="main"  style="position: relative; width: 100%; height: 400px; margin: 0px auto;">
             <div id="game"  style="position: absolute; width: 100%; height: 100%;"></div>
+            <!--<div id="edit"  style="position: absolute; width: 100%; height: 100%;">-->
+                <!--<div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;">cvt({{ codetext }})</div>-->
+            <!--</div>-->
             <div id="edit"  style="position: absolute; width: 100%; height: 100%;">
-                <div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;">{{ codetext }}</div>
+                <div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;"></div>
             </div>
             <div id="nopydiv"  style="position: absolute; width: 100%; height: 100%; right: -10px; bottom: -8px; display: none; z-index:100;">
                 <img id="emmenu" src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg" alt="menu" title="menu" width="600px"/>
 
             </div>
             <div id="pydiv"  title="">
-                <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+                <span style="color:white">LOADING..</span>
             </div>
             <div id="console">
                 <textarea id="pyconsole" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>
