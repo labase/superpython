@@ -59,7 +59,7 @@
                 <div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;"></div>
             </div>
             <div id="nopydiv"  style="position: absolute; width: 100%; height: 100%; right: -10px; bottom: -8px; display: none; z-index:100;">
-                <img id="emmenu" src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg" alt="menu" title="menu" width="600px"/>
+                <img id="emmenu" src="/images/site_em_construcao_.jpg" alt="menu" title="menu" width="600px"/>
 
             </div>
             <div id="pydiv"  title="">
