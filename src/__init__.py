@@ -26,31 +26,31 @@ handler.
 from lib import bottle
 from lib.bottle import Bottle, redirect
 # name and list your controllers here so their routes become accessible.
-from server.controllers import main_controller, project_controller
+from server.controllers import main_controller, project_controller, code_controller
 # Enable debugging, which gives us tracebacks
 bottle.DEBUG = True
 
 # Run the Bottle wsgi application. We don't need to call run() since our
 # application is embedded within an App Engine WSGI application server.
-bottle = Bottle()
+appbottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
-bottle.mount("/pontos", main_controller.bottle)
-bottle.mount("/projeto", project_controller.bottle)
+# bottle.mount("/pontos", main_controller.bottle)
+appbottle.mount("/external/brython/Lib/site-packages", project_controller.bottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
-bottle.mount("/main", main_controller.bottle)
-# bottle.mount("/projeto", project_controller.bottle)
+appbottle.mount("/main", main_controller.bottle)
+appbottle.mount("/code", code_controller.bottle)
 # bottle.mount("/pontos", pontos_controller.bottle)
 
 
-@bottle.get('/')
+@appbottle.get('/')
 def home():
     """ Return Hello World at application root URL"""
     redirect('/main')
 
 
-@bottle.error(404)
+@appbottle.error(404)
 def error_404(_):
     """Return a custom 404 error."""
     return 'Sorry, Nothing at this URL.'

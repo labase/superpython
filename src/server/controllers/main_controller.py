@@ -24,20 +24,10 @@ resources your app exposes to clients.
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request, response
-import collections
-
-Item = collections.namedtuple('Item', 'name picture x y')
-Par = collections.namedtuple('Par', 'x y')
-PICTURE = "http://www.floresjardim.com/imagens/bd/rosaazul.jpg"
-PROJECTS = "jardim spy super geo".split()
-IPOS = [Par(100, 0), Par(260, -15), Par(400, -15), Par(550, 0),
-        Par(60, 110), Par(220, 110), Par(440, 110), Par(600, 110),
-        Par(60, 110), Par(210, 110), Par(440, 110), Par(600, 110)]
-ITEMS = [Item(name='projeto %d' % (a * 4 + b), picture=PICTURE, x=b * 160, y=a * 200) for a in range(6) for b in
-         range(5)]
-for indice, novos in enumerate(IPOS):
-    ITEMS[indice] = Item(ITEMS[indice].name, ITEMS[indice].picture, novos.x, novos.y)
+from lib.bottle import Bottle, view, request, response, redirect
+# from ..models.code_store import DB
+from ..models import code_store as cs
+from . import project, get_project, project_visual_data
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -45,22 +35,45 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 @bottle.get('/')
 @view('index')
+@get_project
 def home():
-    """ Return Hello World at application root URL"""
-    project = request.urlparts.geturl().split('/')[2].split('.')[0]
-    if project in PROJECTS:
-        response.set_cookie('_spy_project_', project)
-    items = ITEMS
-    return dict(user="fake: %s" % project, result=items, selector=IPOS)
+    """ Return User Selection at application root URL"""
+    print("home project", project)
+    tops, items = project_visual_data()
+    return dict(user="fake: %s" % project, result=items, selector=tops)  # IPOS[:2])
 
 
 @bottle.post('/editor')
 @view('projeto')
-def home():
-    """ Return Hello World at application root URL"""
-    project = request.urlparts.geturl().split('/')[2].split('.')[0]
-    prj = request.forms.get('module')
+@get_project
+def edit():
+    """ Return Project editor"""
+    person = request.forms.get('module')
+    # if cs.DB.islogged(project, person):
+    #     redirect("/main")
+    cursession, lastsession = cs.DB.login(project, person)
+    lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
+    print(""" Return Project editor""", lastcodetext)
+    response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
+    # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
+    return dict(projeto=person, codename=lastcodename, codetext=lastcodetext)
 
-    if project in PROJECTS:
-        response.set_cookie('_spy_project_', project)
-    return dict(projeto="projeto%s" % prj)
+
+@bottle.post('/save')
+@get_project
+def save():
+    """ Save given file into datastore"""
+    codej = request.json
+    codedict = {str(k): str(v) for k, v in codej.items()}
+    print("code", codej["name"], project, codej, codedict)
+    cs.DB.save(**codedict)
+    return "file saved"
+
+
+@bottle.post('/logout')
+@get_project
+def logout():
+    """ Logout from session"""
+    person = request.forms.get('person')
+    cs.DB.logout(project, person)
+    return "logout"

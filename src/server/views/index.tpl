@@ -20,16 +20,12 @@ Super Python - User Programming Interface
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" type="text/css" />
     <script type="text/javascript" src="external/brython/brython.js"></script>
+    <!--
     <script type="text/javascript" src="external/brython/py_VFS.js"></script>
     <script type="text/javascript" src="libs/custom_VFS.js"></script>
     <script type="text/python" src="libs/importhooks/localstorage.py"></script>
     <script type="text/python" src="libs/importhooks/custom_VFS.py"></script>
-    <script type="text/python">
-    from browser import window
-    from browser import doc, svg
-    from superpython import main
-    # main(doc,svg)
-    </script>
+    -->
         <style>
             body, html {
                 margin: 0;
@@ -70,16 +66,28 @@ Super Python - User Programming Interface
 
         </style>
 
+    <script type="text/python">
+        from browser import alert, document, window
+        def _request_login_if_available(user, blocked):
+            #alert("%s, %s" % (user, blocked))
+            #return
+            if blocked:
+                user_name = input("Este grupo esta em uso, digite o nome deste grupo para assumir o controle:")
+                if user_name != user:
+                    alert("Nome incorreto, login falhou.")
+                    return
+            document["module"].value = user
+            document.forms["select"].submit()
+        window._request_login_if_available = _request_login_if_available
+    </script>
 </head>
 <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true,
                        custom_import_funcs:[import_hooks]})" background="/images/pipe_back.jpg">
-    <H1>USER: {{ user }}</H1>
     <div id="banner">
         <div id="menu" style="position:absolute; left:0px; top:0px;">
             % for proj in result:
-                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y }}px;"> <!--id="{{ 'item' + "".join(proj.name.split()) }}">-->
-                    <span>{{ proj.name }}</span><br/>
-                    <img src="{{ proj.picture }}" />
+                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y+15 }}px;
+                    background-image: url(images/rochas.jpg); background-position: {{ proj.ox }}px {{ proj.oy }}px;">
                 </div>
             %end
 
@@ -89,10 +97,14 @@ Super Python - User Programming Interface
         </div>
         <div id="selector" style="position:absolute; left:0px; top:0px;">
             <form id="select" method="post" action="main/editor">
-            <svg width="800" height="800">
                 % for item, sel in enumerate(selector):
-                    <circle r="40px" cx="{{ 70+sel.x }}" cy="{{ 70+sel.y }}" onclick="submitform({{ item }})"></circle>
+                    <div id="{{ 'topper%d'%item }}"
+                         style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">
+                         <img src="images/crank.png" width="100px"
+                              title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
+                    </div>
                 %end
+            <svg width="800" height="800">
             </svg>
                 <input id="module" name="module" type="hidden"/>
                 <script type="text/javascript">

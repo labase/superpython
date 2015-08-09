@@ -17,33 +17,22 @@
 # Você deve ter recebido uma cópia da Licença Pública Geral GNU
 # junto com este programa, se não, veja em <http://www.gnu.org/licenses/>
 
-"""Controller handles routes starting with /project.
+
+"""Google HDB storage.
+
+.. moduleauthor:: Carlo Oliveira <carlo@nce.ufrj.br>
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, HTTPError, view, request, response
-from ..models import code_store as cs
+# Imports the NDB data modeling API
+import os
+import sys
 
-bottle = Bottle()  # create another WSGI application for this controller and resource.
-# debug(True) #  uncomment for verbose error logging. Do not use in production
+if "AUTH_DOMAIN" in os.environ.keys():
+    from google.appengine.ext import ndb
+else:
+    from lib.minimock import Mock
+    sys.modules['google.appengine.ext'] = Mock('google.appengine.ext')
+    ndb = Mock('google.appengine.ext')
 
-
-@bottle.get('/<pypath:path>')
-def handle(pypath):
-    project = request.get_cookie('_spy_project_')
-    print('/<pypath:path>', pypath)
-    code = cs.DB.load(name=pypath)
-    if code:
-        return code
-    if "__init__" in pypath:
-        module = pypath.split("/")[:-1]
-        persons = cs.DB.getlogged(project)
-
-    '''
-    if "project" in pypath:
-            return "\n"
-        if "project/carlo" in pypath:
-            return "main = 142857"
-            '''
-
-    raise HTTPError(404, "No such board.")
+NDB = ndb

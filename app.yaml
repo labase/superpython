@@ -6,23 +6,30 @@ threadsafe: yes
 
 handlers:
 
+- url: /external/brython/Lib/site-packages/.*\.py
+  script: src.appbottle
 
-- url: /(.*\.css)
-  mime_type: text/css
-  static_files: static/css/\1
-  upload: static/css/(.*\.css)
-
-- url: /(.*\.js)
-  mime_type: text/javascript
-  static_files: static/\1
-  upload: static/(.*\.js)
+- url: /external/brython//Lib/(.*\.py)
+  mime_type: text/plain
+  static_files: static/external/brython/Lib/\1
+  upload: static/external/brython/Lib(.*\.py)
 
 - url: /(external.*\.py)
   mime_type: text/plain
   static_files: static/\1
   upload: static/(.*\.py)
 
-- url: /(super.*\.py)
+- url: /(external.*\.css)
+  mime_type: text/css
+  static_files: static/\1
+  upload: static/(.*\.py)
+
+- url: /(external.*\.js)
+  mime_type: text/javascript
+  static_files: static/\1
+  upload: static/(.*\.py)
+
+- url: /main/(super.*\.py)
   mime_type: text/plain
   static_files: src/client/\1
   upload: src/client/(.*\.py)
@@ -37,8 +44,18 @@ handlers:
   static_files: static/\1
   upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png|svg))
 
+- url: /(.*\.css)
+  mime_type: text/css
+  static_files: static/css/\1
+  upload: static/css/(.*\.css)
+
+- url: /(.*\.js)
+  mime_type: text/javascript
+  static_files: static/\1
+  upload: static/(.*\.js)
+
 - url: .*  # This regex directs all routes to main.app
-  script: src.bottle
+  script: src.appbottle
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
