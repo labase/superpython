@@ -23,21 +23,27 @@
 __author__ = 'carlo'
 from lib.bottle import Bottle, HTTPError, view, request, response
 from ..models import code_store as cs
+# from . import project, get_project
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
 
 
 @bottle.get('/<pypath:path>')
+# @get_project
 def handle(pypath):
     project = request.get_cookie('_spy_project_')
-    print('/<pypath:path>', pypath)
     code = cs.DB.load(name=pypath)
+    print('/<pypath:path>', pypath, project, code)
     if code:
         return code
     if "__init__" in pypath:
-        module = pypath.split("/")[:-1]
-        persons = cs.DB.getlogged(project)
+        module = pypath.split("/")
+        print('/<pypath:path__init__>', pypath, module)
+        module = module[-2] if len(module) >= 2 else None
+        print('/<pypath:path__init__>', module, project, cs.DB.ismember(project, module))
+        if cs.DB.ismember(project, module):
+            return "#"
 
     '''
     if "project" in pypath:

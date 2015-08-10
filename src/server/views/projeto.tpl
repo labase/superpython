@@ -13,38 +13,25 @@
             .ui-dialog-titlebar {padding: 0.18em 1em !important;}
             .ui-dialog-content {padding: 0.3em 0.99em  0.99em 0.2em !important;font-size:12px !important; }
         </style>
-        <!--
-
-        <script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-        <script src="/js/ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-        <script src="/js/ace/mode-python3.js" type="text/javascript" charset="utf-8"></script>
-        <script src="/js/ace/snippets/python.js" type="text/javascript" charset="utf-8"></script>
-
-        <script type="text/javascript" src="/external/brython/py_VFS.js"></script>
-
-        <script type="text/javascript" src="/libs/custom_VFS.js"></script>
-        -->
         <script type="text/javascript" src="/external/brython/brython.js"></script>
 
         <script type="text/python">
             from javascript import JSObject
             from browser import window, document, html, ajax, svg
-            from urllib.parse import unquote
-            #from jqueryui import jq
-            #jq['pydiv'].dialog()
-            #cvt = unquote
-            def cvt(t):
-                u = unquote(t)
-                print("cvt", t, u)
-                document
-                return u
+            from html.parser import HTMLParser
+            from jqueryui import jq
+            from superpython import main
+
+
             class Browser:
                 svg = svg
                 html = html
-                doc = document #  ["main"]
+                doc = document
                 window = window
                 ajax = ajax
-            from superpython import main
+                jq = jq
+                unescape = HTMLParser().unescape
+
             main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}", "{{ codetext }}")
 
         </script>
@@ -52,14 +39,11 @@
     <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">
         <div id="main"  style="position: relative; width: 100%; height: 400px; margin: 0px auto;">
             <div id="game"  style="position: absolute; width: 100%; height: 100%;"></div>
-            <!--<div id="edit"  style="position: absolute; width: 100%; height: 100%;">-->
-                <!--<div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;">cvt({{ codetext }})</div>-->
-            <!--</div>-->
             <div id="edit"  style="position: absolute; width: 100%; height: 100%;">
                 <div id="{{ projeto }}" class="editclass" style="width: 100%; height: 100%;"></div>
             </div>
             <div id="nopydiv"  style="position: absolute; width: 100%; height: 100%; right: -10px; bottom: -8px; display: none; z-index:100;">
-                <img id="emmenu" src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg" alt="menu" title="menu" width="600px"/>
+                <img id="emmenu" src="/images/site_em_construcao_.jpg" alt="menu" title="menu" width="600px"/>
 
             </div>
             <div id="pydiv"  title="">

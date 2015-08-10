@@ -65,6 +65,11 @@ class Project(dbs.NDB.Expando):
     populated = dbs.NDB.BooleanProperty(default=False)
     sessions = dbs.NDB.JsonProperty(default={})
 
+    @classmethod
+    def ismember(cls, project, person):
+        prj = Project.nget(project)
+        return prj and (person in prj.persons)
+
     def updatesession(self, person):
         # self.sessions = set(self.sessions).add(person)
         self.sessions[person] = True
@@ -193,11 +198,8 @@ class Session(dbs.NDB.Expando):
 
     @classmethod
     def load(cls, name):
-        path = name.split("/")
-        if Person.nget(path[0]) and "__init__" in path[1]:
-            return "#"
         code = Code.nget(name=name)
-        return code.text
+        return code and code.text
 
     @classmethod
     def save(cls, **kwargs):
@@ -207,6 +209,12 @@ class Session(dbs.NDB.Expando):
     @classmethod
     def getlogged(cls, project):
         return Project.nget(project).sessions
+
+    @classmethod
+    def ismember(cls, project, person):
+        if not project:
+            return Person.nget(person)
+        return Project.ismember(project, person)
 
     @classmethod
     def islogged(cls, project, person):

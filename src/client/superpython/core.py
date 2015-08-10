@@ -19,18 +19,16 @@
 
 """
 ############################################################
-SuperPython - Pacote Principal
+SuperPython - Pacote Cliente
 ############################################################
 
-Define a classe SuperPython.
+Adiciona um editor Ace, dois botões e dois consoles do programa.
 
 """
 import traceback
 import sys
 import json
 import collections
-from html.parser import HTMLParser
-HTMLParser().unescape("print(&quot;granito&quot;)")
 Dims = collections.namedtuple('Dims', 'x y w h')
 GUI = None
 
@@ -52,7 +50,7 @@ class Ace:
         self._container = browser.doc["main"]
         self._editors = {}
         self.edit, self.project = edit, project
-        self.unescape = HTMLParser().unescape
+        self.unescape = browser.unescape
 
         self.gui.window.addEventListener('resize', _ace_editor_resize, True)
         _ace_editor_resize()
@@ -89,6 +87,7 @@ class Console:
     """Classe que define o console de resposta da execução
 
     :param browser: Referência ao módulo navegador do Brython
+    :param ace: Referência ao módulo editor Ace
     """
 
     def __init__(self, browser, ace):
@@ -99,12 +98,12 @@ class Console:
         self._pycanvas = browser.doc["pydiv"]
         self._run_or_code = self.run
         self.ace = ace
+        self.jq = browser.jq
         browser.doc["run"].onclick = self.run
         self._owrite = sys.stdout.write
         self._ewrite = sys.stderr.write
         sys.stdout.write = self.write
         sys.stderr.write = self.write
-        # print("Console.self.__init__", self._run_or_code)
         self._pycanvas.html = '<img id="emmenu"' \
                               ' src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg"' \
                               ' alt="menu" title="menu" width="400px"/>'
@@ -122,27 +121,26 @@ class Console:
                 self.jq_canvas.outerWidth(), self.jq_canvas.outerHeight())
         self._run_or_code = run_or_code
         self._pyconsole.style.display = display
-        from jqueryui import jq
         if self.jq_canvas_data:
             cs = self.jq_canvas_data
-            self.jq_canvas = jq['pydiv'].dialog(
+            self.jq_canvas = self.jq['pydiv'].dialog(
                 dict(position=[cs.x, cs.y],
                      width=cs.w, height=cs.h), show=dict(effect="fade", duration=800),
                 resizeStop=console_resize, dragStop=console_resize)
         else:
-            self.jq_canvas = jq['pydiv'].dialog(
-                dict(position=dict(my="left top", at="left bottom", of="#control"),
+            self.jq_canvas = self.jq['pydiv'].dialog(
+                dict(position=dict(my="right top", at="left bottom", of="#control"),
                      width="60%", height=400), show=dict(effect="fade", duration=800),
                 resizeStop=console_resize, dragStop=console_resize)
         if self.jq_console_data:
             cs = self.jq_console_data
-            self.jq_console = jq['console'].dialog(
+            self.jq_console = self.jq['console'].dialog(
                 dict(position=[cs.x, cs.y], title="console",
                      width=cs.w, height=cs.h), show=dict(effect="fade", duration=800),
                 resizeStop=console_resize, dragStop=console_resize)
         else:
-            self.jq_console = jq['console'].dialog(
-                dict(position=dict(my="left top", at="left bottom", of="#pydiv"), title="console",
+            self.jq_console = self.jq['console'].dialog(
+                dict(position=dict(my="right bottom", at="right bottom", of="#edit"), title="console",
                      width="60%", height=200), show=dict(effect="fade", duration=800),
                 resizeStop=console_resize, dragStop=console_resize)
 
@@ -206,10 +204,7 @@ class SuperPython:
         self._console = Console(self.gui, self.ace)
 
     def save(self, _=0):
-        # print('save content-type', self.project)
-        # self._pyconsole.value = ''
         src = self.ace.get_content()  # .getCurrentText()
-        # print('save content-type', 'application/json', src)
         # t0 = time.perf_counter()
         try:
             jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
