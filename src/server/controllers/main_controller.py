@@ -64,7 +64,7 @@ def edit():
 def save():
     """ Save given file into datastore"""
     codej = request.json
-    codedict = {str(k): str(v) for k, v in codej.items()}
+    codedict = {str(k): unicode(v) for k, v in codej.items()}
     print("code", codej["name"], project, codej, codedict)
     cs.DB.save(**codedict)
     return "file saved"
