@@ -38,9 +38,10 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 @get_project
 def home():
     """ Return User Selection at application root URL"""
+    # prj = request.query.proj
     print("home project", project)
     tops, items = project_visual_data()
-    return dict(user="fake: %s" % project, result=items, selector=tops)  # IPOS[:2])
+    return dict(user=project, result=items, selector=tops)  # IPOS[:2])
 
 
 @bottle.post('/editor')
@@ -64,7 +65,7 @@ def edit():
 def save():
     """ Save given file into datastore"""
     codej = request.json
-    codedict = {str(k): str(v) for k, v in codej.items()}
+    codedict = {str(k): unicode(v) for k, v in codej.items()}
     print("code", codej["name"], project, codej, codedict)
     cs.DB.save(**codedict)
     return "file saved"

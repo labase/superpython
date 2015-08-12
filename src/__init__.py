@@ -24,7 +24,7 @@ Loads the Bottle framework and mounts controllers.  Also adds a custom error
 handler.
 """
 from lib import bottle
-from lib.bottle import Bottle, redirect
+from lib.bottle import Bottle, redirect, request
 # name and list your controllers here so their routes become accessible.
 from server.controllers import main_controller, project_controller, code_controller
 # Enable debugging, which gives us tracebacks
@@ -47,7 +47,9 @@ appbottle.mount("/code", code_controller.bottle)
 @appbottle.get('/')
 def home():
     """ Return Hello World at application root URL"""
-    redirect('/main')
+    prj = request.query.proj
+    print("home project /", prj)
+    redirect('/main?proj=%s' % prj)
 
 
 @appbottle.error(404)

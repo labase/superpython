@@ -34,12 +34,14 @@ DEFAULT_PROJECT_NAMES = "JardimBotanico SuperPlataforma SuperPython MuseuGeo"
 OLDNA = "granito basalto pomes calcario marmore arenito" \
         " calcita_laranja agua_marinha amazonita hematita quartzo_rosa turmalina" \
         " citrino pirita silex ametista cristal quartzo-verde" \
-        " seixo dolomita fluorita aragonita calcita onix".split()
+        " seixo dolomita fluorita aragonita calcita onix" \
+        " feldspato _ jaspe agata sodalita alabastro".split()
 NAMES = "granito arenito" \
         " calcita_laranja agua_marinha amazonita quartzo_rosa turmalina" \
         " citrino pirita silex ametista cristal quartzo-verde" \
         " fluorita onix" \
         " feldspato jaspe agata sodalita alabastro".split()
+SNAMES = "aries touro gemeos cancer leao virgem libra escorpiao ofiuco sargitario capricornio aquario peixes".split()
 
 
 class Program(dbs.NDB.Expando):
@@ -62,6 +64,7 @@ class Project(dbs.NDB.Expando):
     program = dbs.NDB.KeyProperty(kind=Program)
     name = dbs.NDB.StringProperty(indexed=True)
     persons = dbs.NDB.TextProperty(indexed=False)
+    sprites = dbs.NDB.JsonProperty(indexed=False)
     populated = dbs.NDB.BooleanProperty(default=False)
     sessions = dbs.NDB.JsonProperty(default={})
 
@@ -208,7 +211,7 @@ class Session(dbs.NDB.Expando):
 
     @classmethod
     def getlogged(cls, project):
-        return Project.nget(project).sessions
+        return Project.nget(project).sessions, Project.nget(project).sprites
 
     @classmethod
     def ismember(cls, project, person):
@@ -271,26 +274,27 @@ class Session(dbs.NDB.Expando):
         return oquestions
 
     @classmethod
-    def init_db_(cls, persons=NAMES):
+    def init_db_(cls):
 
         if "AUTH_DOMAIN" not in os.environ.keys():
             return
 
-        prj = Project.nget(name="superpython")
-        if not prj:
-            prj = Project.create(name="superpython")
         # persons = ["projeto%d" % d for d in range(20)]
-        ses = Session.create(name=uuid1().hex, project=prj.key)
-        Session._populate_persons(prj, ses, persons)
+        ses = Session.create(name=uuid1().hex)
+        Session._populate_persons("superpython", NAMES, OLDNA)
+        Session._populate_persons("surdo", SNAMES, SNAMES)
 
     @classmethod
-    def _populate_persons(cls, project, session, persons):
-        prj = session.project.get()  # Project.kget(key=session.project)
+    def _populate_persons(cls, projectname, persons, sprites):
+        prj = Project.nget(name=projectname)
+        if not prj:
+            prj = Project.create(name=projectname, sprites=sprites)
+        # prj = project  # session.project.get()  # Project.kget(key=session.project)
         if prj.populated:
             return prj.persons
         new_persons = [
             # Person.create(project=project.key, name=key, lastsession=session.key) for key in persons
-            Person.create(project=project.key, name=key, lastsession=None) for key in persons
+            Person.create(project=prj.key, name=key, lastsession=None) for key in persons
             ]
         print(new_persons)
         prj.sessions = {person: False for person in persons}
