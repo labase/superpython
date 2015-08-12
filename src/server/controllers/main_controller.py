@@ -38,9 +38,10 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 @get_project
 def home():
     """ Return User Selection at application root URL"""
+    # prj = request.query.proj
     print("home project", project)
     tops, items = project_visual_data()
-    return dict(user="fake: %s" % project, result=items, selector=tops)  # IPOS[:2])
+    return dict(user=project, result=items, selector=tops)  # IPOS[:2])
 
 
 @bottle.post('/editor')

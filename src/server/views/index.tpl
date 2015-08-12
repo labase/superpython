@@ -87,7 +87,7 @@ Super Python - User Programming Interface
         <div id="menu" style="position:absolute; left:0px; top:0px;">
             % for proj in result:
                 <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y+15 }}px;
-                    background-image: url(images/rochas.jpg); background-position: {{ proj.ox }}px {{ proj.oy }}px;">
+                    background-image: url(images/{{ user }}.jpg); background-position: {{ proj.ox }}px {{ proj.oy }}px;">
                 </div>
             %end
 

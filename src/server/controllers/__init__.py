@@ -60,13 +60,16 @@ project = ""
 
 def get_project(func):
     def decorator():
-        _project = request.urlparts.hostname.split('.')
-        if _project and (_project[0] in PROJECTS):
-            _project = _project[0]
-        elif request.get_cookie('_spy_project_'):
-            _project = request.get_cookie('_spy_project_')
-        else:
-            _project = "superpython"
+        _project = request.query.proj
+        print("get_project", _project)
+        if not _project or _project not in PROJECTS:
+            _project = request.urlparts.hostname.split('.')
+            if _project and (_project[0] in PROJECTS):
+                _project = _project[0]
+            elif request.get_cookie('_spy_project_') in PROJECTS:
+                _project = request.get_cookie('_spy_project_')
+            else:
+                _project = "superpython"
 
         my_globals = {}
         my_globals.update(globals())
@@ -79,13 +82,14 @@ def get_project(func):
 def project_visual_data():
     """ Return User Selection at application root URL"""
     def gxy(project_name):
-        index = NAMES.index(project_name)
+        index = person_sprite.index(project_name)
         return Par(-STEPX * (index % 6), -STEPY * (index//6))
-    persons = cs.DB.getlogged(project)
-    sorted_persons = ONAME  # sorted(persons.keys())
-    tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:20], IPOS)]
+    persons, person_sprite = cs.DB.getlogged(project)
+    pic_size = len(persons)
+    sorted_persons = sorted(persons.keys())
+    tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:pic_size], IPOS)]
     items = [Item(name, persons[name], x, y, gxy(name).x, gxy(name).y)
-             for name, (x, y) in zip(sorted_persons[:20], IPOS)]
+             for name, (x, y) in zip(sorted_persons[:pic_size], IPOS)]
     print("home: persons, tops, items", persons, tops)
     print("home: items", items)
     return tops, items
