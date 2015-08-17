@@ -18,7 +18,7 @@
 # junto com este programa, se não, veja em <http://www.gnu.org/licenses/>
 
 import lib.bottle as bottle
-from lib.bottle import Bottle, view, request, response, redirect
+from lib.bottle import request
 import os
 import types
 from ..models import code_store as cs
@@ -27,12 +27,11 @@ Item = collections.namedtuple('Item', 'name picture x y ox oy')
 Par = collections.namedtuple('Par', 'x y')
 PROJECTS = "jardim spy super surdo mgeo".split()
 PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedonia1.png"
-PROJECTS = "jardim spy super surdo mgeo".split()
-IPOS = [Par(100, -5), Par(260, -19), Par(400, -19), Par(550, 0),
-        Par(60, 108), Par(220, 108), Par(440, 108), Par(600, 108),
-        Par(90, 219), Par(210, 249), Par(440, 249), Par(570, 219),
-        Par(90, 319), Par(210, 349), Par(440, 349), Par(570, 319),
-        Par(90, 419), Par(210, 449), Par(440, 449), Par(570, 419)]
+IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
+        Par(45, 104), Par(211, 108), Par(432, 107), Par(600, 108),
+        Par(78, 218), Par(214, 251), Par(431, 252), Par(564, 218),
+        Par(127, 329), Par(212, 401), Par(432, 398), Par(528, 327),
+        Par(79, 434), Par(207, 542), Par(430, 542), Par(564, 429)]
 BPOS = [Par(-(dx*160), -(dy*120)) for dy in range(6) for dx in range(5)]
 NAMES = "granito _ _ _ _ arenito" \
         " calcita_laranja agua_marinha amazonita _ quartzo_rosa turmalina" \
@@ -46,6 +45,9 @@ ONAME = "granito arenito" \
         " feldspato jaspe agata sodalita alabastro".split()
 STEPX = 921 / 6
 STEPY = 521 / 5
+# BRYTHON = "/external/brython/brython.js"
+BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
+# BRYTHON = "http://www.brython.info/src/brython.js"
 # import sys
 # project_server = '/'.join(os.getcwd().split('/')[:-1])
 project_server = os.getcwd()
@@ -77,6 +79,7 @@ def get_project(func):
         call_fn = types.FunctionType(func.func_code, my_globals)
         return call_fn()
     return decorator
+
 
 @get_project
 def project_visual_data():

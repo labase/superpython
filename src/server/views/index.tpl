@@ -14,12 +14,11 @@ Super Python - User Programming Interface
 -->
 <html>
 <head>
-    <meta charset="iso-8859-1" />
     <title>SuperPython</title>
     <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" type="text/css" />
-    <script type="text/javascript" src="external/brython/brython.js"></script>
+    <script type="text/javascript" src="{{ brython  }}"></script>
     <!--
     <script type="text/javascript" src="external/brython/py_VFS.js"></script>
     <script type="text/javascript" src="libs/custom_VFS.js"></script>
@@ -68,6 +67,33 @@ Super Python - User Programming Interface
 
     <script type="text/python">
         from browser import alert, document, window
+        class Edi:
+            def __init__(self):
+                self.last = (0,0)
+                self.on = False
+                self.z = document["selector"]
+                self.cap = None
+            def _on_mouse_down(self, ev):
+                self.on = not self.on
+                self.cap = ev.target.parent.id
+                a, b, c, d = ev.clientX, ev.clientY, self.z.left, self.z.top
+                self.last = (a, b)
+                print(ev.target.parent.id, a, b, c, d, a-c, b-d )
+                if ev.target.parent.id == "topper0":
+                    print(["Par(%d, %d)" % (document["topper%d" % t].left-c-30, document["topper%d" % t].top-d-25) for t in range(20)])
+            def _on_mouse_over(self, ev):
+                if self.on:
+                    cap = document[self.cap]
+                    j, k = self.last
+                    l, m = self.z.left, self.z.top
+                    a, b, c, d = ev.clientX, ev.clientY, cap.left, cap.top
+                    x, y = a-j+c-l, b-k+d-m
+                    cap.left = x
+                    cap.style.top = y
+                    print(x, y, a, b, c, d, j, k, cap.left, cap.top)
+                    self.last = (a, b)
+
+                print(ev.target.id, ev.clientX, ev.clientY)
         def _request_login_if_available(user, blocked):
             #alert("%s, %s" % (user, blocked))
             #return
@@ -79,6 +105,12 @@ Super Python - User Programming Interface
             document["module"].value = user
             document.forms["select"].submit()
         window._request_login_if_available = _request_login_if_available
+        e =Edi()
+        '''
+        for i in range(20):
+            document["topper%d" % i].onclick = e._on_mouse_down
+            document["topper%d" % i].onmousemove = e._on_mouse_over
+        '''
     </script>
 </head>
 <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true,
@@ -93,14 +125,14 @@ Super Python - User Programming Interface
 
         </div>
         <div id="mask" style="position:absolute; left:0px; top:0px;">
-            <img src="/images/selector.png"/>
+            <img src="/images/selector.png" alt="">
         </div>
         <div id="selector" style="position:absolute; left:0px; top:0px;">
             <form id="select" method="post" action="main/editor">
                 % for item, sel in enumerate(selector):
                     <div id="{{ 'topper%d'%item }}"
                          style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">
-                         <img src="images/crank.png" width="100px"
+                         <img src="images/crank.png" width="100px" alt="{{ sel.name }}"
                               title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
                     </div>
                 %end
@@ -120,3 +152,4 @@ Super Python - User Programming Interface
 
 </body>
 </html>
+                 <!--style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">-->

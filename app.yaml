@@ -6,7 +6,13 @@ threadsafe: yes
 
 handlers:
 
-- url: /external/brython/Lib/site-packages/.*\.py
+- url: /main/(superpython/__init__\.py|superpython/core\.py)
+  mime_type: text/plain
+  static_files: src/client/\1
+  upload: src/client/(.*\.py)
+
+#- url: /external/brython/Lib/site-packages/.*\.py
+- url: /main/superpython/.*\.py
   script: src.appbottle
 
 - url: /external/brython//Lib/(.*\.py)
@@ -28,11 +34,6 @@ handlers:
   mime_type: text/javascript
   static_files: static/\1
   upload: static/(.*\.py)
-
-- url: /main/(super.*\.py)
-  mime_type: text/plain
-  static_files: src/client/\1
-  upload: src/client/(.*\.py)
 
 - url: /(libs.*\.py)
   mime_type: text/plain

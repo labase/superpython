@@ -40,7 +40,8 @@ class Ace:
 
         def _ace_editor_resize(_=0):
             _height = self.gui.doc.documentElement.clientHeight
-            self._ace_editor.style.height = '%spx' % int(_height)  # * 0.90)
+            self._ace_editor.style.height = '%spx' % int(_height* 0.98)  # * 0.90)
+            self._ace_editor.style.marginBottom = '2px'
             _width = self.gui.doc.documentElement.clientWidth
             _swidth = _width-100  # min(_width + 100, 1000)
             self._ace_editor.style.width = '%spx' % int(_swidth)

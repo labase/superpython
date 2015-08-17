@@ -35,8 +35,8 @@ bottle.DEBUG = True
 appbottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
-# bottle.mount("/pontos", main_controller.bottle)
-appbottle.mount("/external/brython/Lib/site-packages", project_controller.bottle)
+# appbottle.mount("/external/brython/Lib/site-packages", project_controller.bottle)
+appbottle.mount("/main/superpython", project_controller.bottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
 appbottle.mount("/main", main_controller.bottle)
