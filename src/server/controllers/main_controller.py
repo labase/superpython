@@ -24,10 +24,10 @@ resources your app exposes to clients.
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request, response, redirect
+from lib.bottle import Bottle, view, request, response
 # from ..models.code_store import DB
 from ..models import code_store as cs
-from . import project, get_project, project_visual_data
+from . import project, get_project, project_visual_data, BRYTHON
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -41,7 +41,7 @@ def home():
     # prj = request.query.proj
     print("home project", project)
     tops, items = project_visual_data()
-    return dict(user=project, result=items, selector=tops)  # IPOS[:2])
+    return dict(user=project, result=items, selector=tops, brython=BRYTHON)  # IPOS[:2])
 
 
 @bottle.post('/editor')
@@ -55,9 +55,9 @@ def edit():
     cursession, lastsession = cs.DB.login(project, person)
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
     print(""" Return Project editor""", lastcodetext)
-    response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
+    # response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
     # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
-    return dict(projeto=person, codename=lastcodename, codetext=lastcodetext)
+    return dict(projeto=person, codename=lastcodename, codetext=lastcodetext, brython=BRYTHON)
 
 
 @bottle.post('/save')

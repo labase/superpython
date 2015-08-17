@@ -279,8 +279,7 @@ class Session(dbs.NDB.Expando):
         if "AUTH_DOMAIN" not in os.environ.keys():
             return
 
-        # persons = ["projeto%d" % d for d in range(20)]
-        ses = Session.create(name=uuid1().hex)
+        Session.create(name=uuid1().hex)
         Session._populate_persons("superpython", NAMES, OLDNA)
         Session._populate_persons("surdo", SNAMES, SNAMES)
 
@@ -289,17 +288,18 @@ class Session(dbs.NDB.Expando):
         prj = Project.nget(name=projectname)
         if not prj:
             prj = Project.create(name=projectname, sprites=sprites)
-        # prj = project  # session.project.get()  # Project.kget(key=session.project)
+        if not prj.persons:
+            print("_populate_persons if not prj.persons", ' '.join(persons), projectname)
+            prj.persons = ' '.join(persons)
+            prj.put()
         if prj.populated:
             return prj.persons
         new_persons = [
-            # Person.create(project=project.key, name=key, lastsession=session.key) for key in persons
             Person.create(project=prj.key, name=key, lastsession=None) for key in persons
             ]
         print(new_persons)
         prj.sessions = {person: False for person in persons}
         prj.populated = True
-        #  prj.persons = new_persons
         prj.put()
         return new_persons
 

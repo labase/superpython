@@ -6,14 +6,14 @@
         <link rel="stylesheet" href="/style.css" type="text/css" />
         <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
         <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
         <style type="">
             .ui-dialog{font-size: 30%;}
             .ui-dialog-title {font-size:10px !important; margin: -0.02em 0.1em !important;}
             .ui-dialog-titlebar {padding: 0.18em 1em !important;}
             .ui-dialog-content {padding: 0.3em 0.99em  0.99em 0.2em !important;font-size:12px !important; }
         </style>
-        <script type="text/javascript" src="/external/brython/brython.js"></script>
+        <script type="text/javascript" src="{{ brython }}"></script>
 
         <script type="text/python">
             from javascript import JSObject
@@ -52,7 +52,7 @@
             <div id="console">
                 <textarea id="pyconsole" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>
             </div>
-            <div id="control" style="position: absolute; width: 90px; height: 40px; right: -30px; top: -8px;">
+            <div id="control" style="position: absolute; width: 90px; height: 40px; right: 20px; top: -8px;">
                 <img id="menu" src="/images/menu.png" alt="menu" title="menu" width="30px"/>
                 <img id="run" src="/images/run.png" alt="run" title="run" width="30px"/>
             </div>
