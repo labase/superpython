@@ -40,12 +40,13 @@ class Ace:
 
         def _ace_editor_resize(_=0):
             _height = self.gui.doc.documentElement.clientHeight
-            self._ace_editor.style.height = '%spx' % int(_height* 0.98)  # * 0.90)
+            self._ace_editor.style.height = '%spx' % int(_height*0.98)  # * 0.90)
             self._ace_editor.style.marginBottom = '2px'
-            _width = self.gui.doc.documentElement.clientWidth
-            _swidth = _width-100  # min(_width + 100, 1000)
-            self._ace_editor.style.width = '%spx' % int(_swidth)
-            self._container.style.width = '%spx' % int(_swidth)
+            # _width = self.gui.doc.documentElement.clientWidth
+            self._container.style.width = '98\%'  # %spx' % int(_swidth)
+            self._container.style.maxWidth = '1000px'  # %spx' % int(_swidth)
+            self._ace_editor.style.width = '98\%'  # %spx' % int(_swidth)
+            self._ace_editor.style.maxWidth = '1000px'  # %spx' % int(_swidth)
         self.gui = browser
         self._ace_editor = browser.doc["edit"]
         self._container = browser.doc["main"]
@@ -75,6 +76,7 @@ class Ace:
             'enableLiveAutocompletion': True,
             'enableSnippets': True,
             'highlightActiveLine': False,
+            'displayIndentGuides': True,
             'highlightSelectedWord': True
         })
         _editor.focus()
