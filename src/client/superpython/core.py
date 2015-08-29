@@ -66,6 +66,13 @@ class Ace:
         self._code = self.unescape(code)
         self.add_editor(self._code[:])
 
+    def annotate(self, row=1, message="indefinido"):
+        self._editors[self.project].session.clearAnnotations()
+        if not row:
+            return None
+        return self._editors[self.project].session.setAnnotations(
+            [dict(row=row, column=0, text=message, type="error")])
+
     def get_content(self):
         return self._editors[self.project].getValue()
 
@@ -76,10 +83,9 @@ class Ace:
         """
         src = self.get_content()
         dirty = src != self._code
-        print("test_dirty", dirty, code_saved, src[:10], "--------------------------------\n", self._code[:10])
         if code_saved:
             self._code = src[:]
-        return src
+        return dirty and src
 
     def add_editor(self, code=None):
         # add ace editor to filename pre tag
@@ -87,7 +93,7 @@ class Ace:
         _session = _editor.getSession()
         _session.setMode("ace/mode/python")
         _editor.setValue(code)
-        _session.on('change', self.test_dirty)
+        # _session.on('change', self.test_dirty)
 
         _editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
@@ -137,14 +143,13 @@ class Console:
         self._pyconsole.value += '%s' % data
 
     def display_saved(self, message="SAVED"):
-        print("display_saved:", message)
         self.jq_msg = self.jq['message'].dialog(
             dict(position=dict(my="left bottom", at="left bottom", of="#edit"),
-                 width=200, height=80), show=dict(effect="fade", duration=800),
+                 width=250, height=40, dialogClass="no-titlebar"), show=dict(effect="fade", duration=800),
             hide=dict(effect="fade", duration=1800), buttons=[])
-        self._pyconsole.style.display = "block"
+        self._pymessage.style.display = "block"
         self._pymessage.value = message
-        # self.jq_msg.close()
+        self.jq['message'].dialog("close")
 
     def display_canvas(self, display="block"):
         def console_resize(*_):
@@ -186,11 +191,24 @@ class Console:
         try:
             self.display_canvas("block")
             exec(src, globals())
+            self.ace.annotate(0)
             state = 1
         except Exception as _:
             self._run_or_code = self.run
             self._pycanvas.style.display = "none"
             traceback.print_exc()
+            self.ace.annotate(0)
+            error = self._pyconsole.value
+            lines = error.split(' line ')
+            if len(lines) > 1:
+                try:
+                    line = int(lines[-1].split("\n")[0])
+                    error = error.split("\n")[-2]
+                    print(error)
+                    self.ace.annotate(line, error)
+                except Exception as _:
+                    pass
+
             state = 0
         return state
     """
@@ -202,6 +220,7 @@ class Console:
         # print("self._run_or_code")
         self._run_or_code()
     """
+AUTOSAVE = 600000
 
 
 class SuperPython:
@@ -218,11 +237,11 @@ class SuperPython:
         self.ajax = browser.ajax
         self.ace = self.name = self._console = None
         browser.doc["menu"].onclick = self.save
-        self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), 600000)
+        self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), AUTOSAVE)
 
     def _update_timer(self):
         self.gui.timer.clear_timeout(self._timer)
-        self._timer = self.gui.timer.set_timeout(self.save, 600000)
+        self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), AUTOSAVE)
 
     def logout_on_exit(self, ev):
         ev.returnValue = "SAIR?"
@@ -244,19 +263,21 @@ class SuperPython:
         self._console = Console(self.gui, self.ace)
 
     def save(self, _=0, autosaved=False):
-        print("save", _)
-
         def on_complete(request):
-            if request.status == 200 or request.status == 0:
-                msg = (autosaved and "AUTO" or "") + "SAVED"
+            if request.text and (request.status == 200 or request.status == 0):
+                msg = "AUTOSAVED: " if autosaved else "SAVED: "
+                msg += request.text
                 self._console.display_saved(msg)
+                self.ace.test_dirty(None, code_saved=True)
             else:
-                self._console.display_saved("NOT SAVED: " + request.text)
+                error = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
+                self._console.display_saved("NOT SAVED: " + error)
 
-        src = self.ace.test_dirty(None, code_saved=True)
-        print("save\n", src[:10], "-----------------------------\n")
+        src = self.ace.test_dirty(None)
         self._update_timer()
         if not src:
+            if not autosaved:
+                self._console.display_saved("ALREADY SAVED")
             return 1
         # t0 = time.perf_counter()
         try:
@@ -265,7 +286,7 @@ class SuperPython:
             req = self.ajax.ajax()
             req.bind('complete', on_complete)
             req.set_timeout('20000', lambda: self._console.display_saved("NOT SAVED: TIMEOUT"))
-            req.open('POST', "save")  # , async=False)
+            req.open('POST', "save", async=False)
             req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
             req.send(jsrc)
 
