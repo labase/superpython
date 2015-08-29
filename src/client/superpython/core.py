@@ -34,6 +34,13 @@ GUI = None
 
 
 class Ace:
+    """ Inclui uma janela com um editor Acejs.
+
+    :param browser: Brythom module browser
+    :param edit: Referência ao módulo editor Ace
+    :param project: Projeto que o usuário está desenvolvendo
+    :param code: Texto do código a ser adicionado no editor
+    """
 
     def __init__(self, browser, edit, project, code):
         """Constroi os objetos iniciais. """
@@ -56,10 +63,23 @@ class Ace:
 
         self.gui.window.addEventListener('resize', _ace_editor_resize, True)
         _ace_editor_resize()
-        self.add_editor(self.unescape(code))
+        self._code = self.unescape(code)
+        self.add_editor(self._code[:])
 
     def get_content(self):
         return self._editors[self.project].getValue()
+
+    def test_dirty(self, _, code_saved=False):
+        """ Confere e testa o estado de edição para detectar modificações.
+
+        :returns Se o código foi modificado desde a última vez que foi salvo.
+        """
+        src = self.get_content()
+        dirty = src != self._code
+        print("test_dirty", dirty, code_saved, src[:10], "--------------------------------\n", self._code[:10])
+        if code_saved:
+            self._code = src[:]
+        return src
 
     def add_editor(self, code=None):
         # add ace editor to filename pre tag
@@ -67,6 +87,7 @@ class Ace:
         _session = _editor.getSession()
         _session.setMode("ace/mode/python")
         _editor.setValue(code)
+        _session.on('change', self.test_dirty)
 
         _editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
@@ -95,10 +116,11 @@ class Console:
 
     def __init__(self, browser, ace):
         """Constroi os objetos iniciais. """
-        self.jq_canvas = self.jq_console = None
+        self.jq_canvas = self.jq_console = self.jq_msg = None
         self.jq_canvas_data = self.jq_console_data = None
         self._pyconsole = browser.doc["pyconsole"]
         self._pycanvas = browser.doc["pydiv"]
+        self._pymessage = browser.doc["pymessage"]
         self._run_or_code = self.run
         self.ace = ace
         self.jq = browser.jq
@@ -114,7 +136,17 @@ class Console:
     def write(self, data):
         self._pyconsole.value += '%s' % data
 
-    def display_canvas(self, run_or_code, display="block"):
+    def display_saved(self, message="SAVED"):
+        print("display_saved:", message)
+        self.jq_msg = self.jq['message'].dialog(
+            dict(position=dict(my="left bottom", at="left bottom", of="#edit"),
+                 width=200, height=80), show=dict(effect="fade", duration=800),
+            hide=dict(effect="fade", duration=1800), buttons=[])
+        self._pyconsole.style.display = "block"
+        self._pymessage.value = message
+        # self.jq_msg.close()
+
+    def display_canvas(self, display="block"):
         def console_resize(*_):
             self.jq_console_data = Dims(
                 int(self.jq_console.offset().left), int(self.jq_console.offset().top),
@@ -122,7 +154,6 @@ class Console:
             self.jq_canvas_data = Dims(
                 int(self.jq_canvas.offset().left), int(self.jq_canvas.offset().top),
                 self.jq_canvas.outerWidth(), self.jq_canvas.outerHeight())
-        self._run_or_code = run_or_code
         self._pyconsole.style.display = display
         if self.jq_canvas_data:
             cs = self.jq_canvas_data
@@ -150,10 +181,10 @@ class Console:
     def run(self, _=0):
         self._pyconsole.value = ''
         src = self.ace.get_content()  # .getCurrentText()
-        self.display_canvas(self._code, "block")
+        self.display_canvas("block")
         # print("self._run", src)
         try:
-            self.display_canvas(self._code, "block")
+            self.display_canvas("block")
             exec(src, globals())
             state = 1
         except Exception as _:
@@ -162,7 +193,7 @@ class Console:
             traceback.print_exc()
             state = 0
         return state
-
+    """
     def _code(self, _=0):
         self._run_or_code = self.run
         self._pycanvas.style.display = "none"
@@ -170,6 +201,7 @@ class Console:
     def runcode(self, _=0):
         # print("self._run_or_code")
         self._run_or_code()
+    """
 
 
 class SuperPython:
@@ -186,6 +218,11 @@ class SuperPython:
         self.ajax = browser.ajax
         self.ace = self.name = self._console = None
         browser.doc["menu"].onclick = self.save
+        self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), 600000)
+
+    def _update_timer(self):
+        self.gui.timer.clear_timeout(self._timer)
+        self._timer = self.gui.timer.set_timeout(self.save, 600000)
 
     def logout_on_exit(self, ev):
         ev.returnValue = "SAIR?"
@@ -206,13 +243,28 @@ class SuperPython:
         self.ace = Ace(self.gui, self.edit, self.project, code)
         self._console = Console(self.gui, self.ace)
 
-    def save(self, _=0):
-        src = self.ace.get_content()  # .getCurrentText()
+    def save(self, _=0, autosaved=False):
+        print("save", _)
+
+        def on_complete(request):
+            if request.status == 200 or request.status == 0:
+                msg = (autosaved and "AUTO" or "") + "SAVED"
+                self._console.display_saved(msg)
+            else:
+                self._console.display_saved("NOT SAVED: " + request.text)
+
+        src = self.ace.test_dirty(None, code_saved=True)
+        print("save\n", src[:10], "-----------------------------\n")
+        self._update_timer()
+        if not src:
+            return 1
         # t0 = time.perf_counter()
         try:
             jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
 
             req = self.ajax.ajax()
+            req.bind('complete', on_complete)
+            req.set_timeout('20000', lambda: self._console.display_saved("NOT SAVED: TIMEOUT"))
             req.open('POST', "save")  # , async=False)
             req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
             req.send(jsrc)

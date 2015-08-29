@@ -19,7 +19,7 @@
 
         <script type="text/python">
             from javascript import JSObject
-            from browser import window, document, html, ajax, svg
+            from browser import window, document, html, ajax, svg, timer
             from html.parser import HTMLParser
             from jqueryui import jq
             from superpython import main
@@ -32,6 +32,7 @@
                 window = window
                 ajax = ajax
                 jq = jq
+                timer = timer
                 unescape = HTMLParser().unescape
 
             main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}", "{{ codetext }}")
@@ -50,6 +51,9 @@
             </div>
             <div id="pydiv"  title="">
                 <span style="color:white">LOADING..</span>
+            </div>
+            <div id="message">
+                <textarea id="pymessage" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>
             </div>
             <div id="console">
                 <textarea id="pyconsole" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>

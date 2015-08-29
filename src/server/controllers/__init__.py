@@ -45,8 +45,8 @@ ONAME = "granito arenito" \
         " feldspato jaspe agata sodalita alabastro".split()
 STEPX = 921 / 6
 STEPY = 521 / 5
-# BRYTHON = "/external/brython/brython.js"
-BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
+BRYTHON = "/external/brython/brython.js"
+# BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
 # BRYTHON = "http://www.brython.info/src/brython.js"
 # import sys
 # project_server = '/'.join(os.getcwd().split('/')[:-1])
