@@ -6,18 +6,22 @@
         <link rel="stylesheet" href="/style.css" type="text/css" />
         <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
         <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
+        <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>-->
+        <script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/js/ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/js/ace/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>
         <style type="">
             .ui-dialog{font-size: 30%;}
             .ui-dialog-title {font-size:10px !important; margin: -0.02em 0.1em !important;}
             .ui-dialog-titlebar {padding: 0.18em 1em !important;}
             .ui-dialog-content {padding: 0.3em 0.99em  0.99em 0.2em !important;font-size:12px !important; }
+            .no-titlebar  .ui-dialog-titlebar {display: none;}
         </style>
         <script type="text/javascript" src="{{ brython }}"></script>
 
         <script type="text/python">
             from javascript import JSObject
-            from browser import window, document, html, ajax, svg
+            from browser import window, document, html, ajax, svg, timer
             from html.parser import HTMLParser
             from jqueryui import jq
             from superpython import main
@@ -30,6 +34,7 @@
                 window = window
                 ajax = ajax
                 jq = jq
+                timer = timer
                 unescape = HTMLParser().unescape
 
             main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}", "{{ codetext }}")
@@ -48,6 +53,9 @@
             </div>
             <div id="pydiv"  title="">
                 <span style="color:white">LOADING..</span>
+            </div>
+            <div id="message">
+                <textarea id="pymessage" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>
             </div>
             <div id="console">
                 <textarea id="pyconsole" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>

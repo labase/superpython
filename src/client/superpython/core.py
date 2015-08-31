@@ -34,18 +34,26 @@ GUI = None
 
 
 class Ace:
+    """ Inclui uma janela com um editor Acejs.
+
+    :param browser: Brythom module browser
+    :param edit: Referência ao módulo editor Ace
+    :param project: Projeto que o usuário está desenvolvendo
+    :param code: Texto do código a ser adicionado no editor
+    """
 
     def __init__(self, browser, edit, project, code):
         """Constroi os objetos iniciais. """
 
         def _ace_editor_resize(_=0):
             _height = self.gui.doc.documentElement.clientHeight
-            self._ace_editor.style.height = '%spx' % int(_height* 0.98)  # * 0.90)
+            self._ace_editor.style.height = '%spx' % int(_height*0.98)  # * 0.90)
             self._ace_editor.style.marginBottom = '2px'
-            _width = self.gui.doc.documentElement.clientWidth
-            _swidth = _width-100  # min(_width + 100, 1000)
-            self._ace_editor.style.width = '%spx' % int(_swidth)
-            self._container.style.width = '%spx' % int(_swidth)
+            # _width = self.gui.doc.documentElement.clientWidth
+            self._container.style.width = '98\%'  # %spx' % int(_swidth)
+            self._container.style.maxWidth = '1000px'  # %spx' % int(_swidth)
+            self._ace_editor.style.width = '98\%'  # %spx' % int(_swidth)
+            self._ace_editor.style.maxWidth = '1000px'  # %spx' % int(_swidth)
         self.gui = browser
         self._ace_editor = browser.doc["edit"]
         self._container = browser.doc["main"]
@@ -55,10 +63,29 @@ class Ace:
 
         self.gui.window.addEventListener('resize', _ace_editor_resize, True)
         _ace_editor_resize()
-        self.add_editor(self.unescape(code))
+        self._code = self.unescape(code)
+        self.add_editor(self._code[:])
+
+    def annotate(self, row=1, message="indefinido"):
+        self._editors[self.project].session.clearAnnotations()
+        if not row:
+            return None
+        return self._editors[self.project].session.setAnnotations(
+            [dict(row=row, column=0, text=message, type="error")])
 
     def get_content(self):
         return self._editors[self.project].getValue()
+
+    def test_dirty(self, _, code_saved=False):
+        """ Confere e testa o estado de edição para detectar modificações.
+
+        :returns Se o código foi modificado desde a última vez que foi salvo.
+        """
+        src = self.get_content()
+        dirty = src != self._code
+        if code_saved:
+            self._code = src[:]
+        return dirty and src
 
     def add_editor(self, code=None):
         # add ace editor to filename pre tag
@@ -66,6 +93,7 @@ class Ace:
         _session = _editor.getSession()
         _session.setMode("ace/mode/python")
         _editor.setValue(code)
+        # _session.on('change', self.test_dirty)
 
         _editor.setTheme("ace/theme/cobalt")
         # _session.setMode("ace/mode/python")
@@ -75,6 +103,7 @@ class Ace:
             'enableLiveAutocompletion': True,
             'enableSnippets': True,
             'highlightActiveLine': False,
+            'displayIndentGuides': True,
             'highlightSelectedWord': True
         })
         _editor.focus()
@@ -93,10 +122,11 @@ class Console:
 
     def __init__(self, browser, ace):
         """Constroi os objetos iniciais. """
-        self.jq_canvas = self.jq_console = None
+        self.jq_canvas = self.jq_console = self.jq_msg = None
         self.jq_canvas_data = self.jq_console_data = None
         self._pyconsole = browser.doc["pyconsole"]
         self._pycanvas = browser.doc["pydiv"]
+        self._pymessage = browser.doc["pymessage"]
         self._run_or_code = self.run
         self.ace = ace
         self.jq = browser.jq
@@ -112,7 +142,16 @@ class Console:
     def write(self, data):
         self._pyconsole.value += '%s' % data
 
-    def display_canvas(self, run_or_code, display="block"):
+    def display_saved(self, message="SAVED"):
+        self.jq_msg = self.jq['message'].dialog(
+            dict(position=dict(my="left bottom", at="left bottom", of="#edit"),
+                 width=250, height=40, dialogClass="no-titlebar"), show=dict(effect="fade", duration=800),
+            hide=dict(effect="fade", duration=1800), buttons=[])
+        self._pymessage.style.display = "block"
+        self._pymessage.value = message
+        self.jq['message'].dialog("close")
+
+    def display_canvas(self, display="block"):
         def console_resize(*_):
             self.jq_console_data = Dims(
                 int(self.jq_console.offset().left), int(self.jq_console.offset().top),
@@ -120,7 +159,6 @@ class Console:
             self.jq_canvas_data = Dims(
                 int(self.jq_canvas.offset().left), int(self.jq_canvas.offset().top),
                 self.jq_canvas.outerWidth(), self.jq_canvas.outerHeight())
-        self._run_or_code = run_or_code
         self._pyconsole.style.display = display
         if self.jq_canvas_data:
             cs = self.jq_canvas_data
@@ -148,19 +186,32 @@ class Console:
     def run(self, _=0):
         self._pyconsole.value = ''
         src = self.ace.get_content()  # .getCurrentText()
-        self.display_canvas(self._code, "block")
+        self.display_canvas("block")
         # print("self._run", src)
         try:
-            self.display_canvas(self._code, "block")
+            self.display_canvas("block")
             exec(src, globals())
+            self.ace.annotate(0)
             state = 1
         except Exception as _:
             self._run_or_code = self.run
             self._pycanvas.style.display = "none"
             traceback.print_exc()
+            self.ace.annotate(0)
+            error = self._pyconsole.value
+            lines = error.split(' line ')
+            if len(lines) > 1:
+                try:
+                    line = int(lines[-1].split("\n")[0])
+                    error = error.split("\n")[-2]
+                    print(error)
+                    self.ace.annotate(line, error)
+                except Exception as _:
+                    pass
+
             state = 0
         return state
-
+    """
     def _code(self, _=0):
         self._run_or_code = self.run
         self._pycanvas.style.display = "none"
@@ -168,6 +219,8 @@ class Console:
     def runcode(self, _=0):
         # print("self._run_or_code")
         self._run_or_code()
+    """
+AUTOSAVE = 600000
 
 
 class SuperPython:
@@ -184,6 +237,11 @@ class SuperPython:
         self.ajax = browser.ajax
         self.ace = self.name = self._console = None
         browser.doc["menu"].onclick = self.save
+        self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), AUTOSAVE)
+
+    def _update_timer(self):
+        self.gui.timer.clear_timeout(self._timer)
+        self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), AUTOSAVE)
 
     def logout_on_exit(self, ev):
         ev.returnValue = "SAIR?"
@@ -204,14 +262,31 @@ class SuperPython:
         self.ace = Ace(self.gui, self.edit, self.project, code)
         self._console = Console(self.gui, self.ace)
 
-    def save(self, _=0):
-        src = self.ace.get_content()  # .getCurrentText()
+    def save(self, _=0, autosaved=False):
+        def on_complete(request):
+            if request.text and (request.status == 200 or request.status == 0):
+                msg = "AUTOSAVED: " if autosaved else "SAVED: "
+                msg += request.text
+                self._console.display_saved(msg)
+                self.ace.test_dirty(None, code_saved=True)
+            else:
+                error = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
+                self._console.display_saved("NOT SAVED: " + error)
+
+        src = self.ace.test_dirty(None)
+        self._update_timer()
+        if not src:
+            if not autosaved:
+                self._console.display_saved("ALREADY SAVED")
+            return 1
         # t0 = time.perf_counter()
         try:
             jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
 
             req = self.ajax.ajax()
-            req.open('POST', "save")  # , async=False)
+            req.bind('complete', on_complete)
+            req.set_timeout('20000', lambda: self._console.display_saved("NOT SAVED: TIMEOUT"))
+            req.open('POST', "save", async=False)
             req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
             req.send(jsrc)
 
