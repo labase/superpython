@@ -37,7 +37,7 @@
                 timer = timer
                 unescape = HTMLParser().unescape
 
-            main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}", "{{ codetext }}")
+            main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}")
 
         </script>
     </head>

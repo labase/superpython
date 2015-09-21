@@ -57,16 +57,16 @@ def edit():
     print(""" Return Project editor""", lastcodetext)
     # response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
     # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
-    return dict(projeto=person, codename=lastcodename, codetext=lastcodetext, brython=BRYTHON)
+    return dict(projeto=person, codename=lastcodename, brython=BRYTHON)
 
 
-@bottle.post('/load')
+@bottle.get('/load')
 @get_project
-def edit():
+def load():
     """ Return Project Module"""
-    module = request.forms.get('module')
+    module = request.query.module
     code = cs.DB.load(module)
-    print(""" Return Project Module""", code)
+    print(""" Return Project Module""", module)
     return code
 
 
