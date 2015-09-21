@@ -60,6 +60,16 @@ def edit():
     return dict(projeto=person, codename=lastcodename, codetext=lastcodetext, brython=BRYTHON)
 
 
+@bottle.post('/load')
+@get_project
+def edit():
+    """ Return Project Module"""
+    module = request.forms.get('module')
+    code = cs.DB.load(module)
+    print(""" Return Project Module""", code)
+    return code
+
+
 @bottle.post('/save')
 @get_project
 def save():

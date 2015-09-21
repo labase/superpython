@@ -297,3 +297,39 @@ class SuperPython:
 
         # print('<completed in %6.2f ms>' % ((time.perf_counter()-t0)*1000.0))
         return state
+
+    def load(self, _=0, autosaved=False):
+        def on_complete(request):
+            if request.text and (request.status == 200 or request.status == 0):
+                msg = "AUTOSAVED: " if autosaved else "SAVED: "
+                msg += request.text
+                self._console.display_saved(msg)
+                self.ace.test_dirty(None, code_saved=True)
+            else:
+                error = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
+                self._console.display_saved("NOT SAVED: " + error)
+
+        src = self.ace.test_dirty(None)
+        self._update_timer()
+        if not src:
+            if not autosaved:
+                self._console.display_saved("ALREADY SAVED")
+            return 1
+        # t0 = time.perf_counter()
+        try:
+            jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
+
+            req = self.ajax.ajax()
+            req.bind('complete', on_complete)
+            req.set_timeout('20000', lambda: self._console.display_saved("NOT SAVED: TIMEOUT"))
+            req.open('POST', "save", async=False)
+            req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
+            req.send(jsrc)
+
+            state = 1
+            # print("save", jsrc)
+        except Exception as _:
+            state = 0
+
+        # print('<completed in %6.2f ms>' % ((time.perf_counter()-t0)*1000.0))
+        return state
