@@ -1,5 +1,5 @@
 application: super-py
-version: 1
+version: 110
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -54,6 +54,11 @@ handlers:
   mime_type: text/javascript
   static_files: static/\1
   upload: static/(.*\.js)
+
+- url: /(.*\.html)
+  mime_type: application/xml
+  static_files: static/\1
+  upload: static/(.*\.html)
 
 - url: .*  # This regex directs all routes to main.app
   script: src.appbottle

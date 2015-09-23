@@ -22,7 +22,6 @@
         <script type="text/python">
             from javascript import JSObject
             from browser import window, document, html, ajax, svg, timer
-            from html.parser import HTMLParser
             from jqueryui import jq
             from superpython import main
 
@@ -35,9 +34,15 @@
                 ajax = ajax
                 jq = jq
                 timer = timer
-                unescape = HTMLParser().unescape
 
-            main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}", "{{ codetext }}")
+            superpython = main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}")
+            def run(self, _=0):
+                try:
+                    src = superpython.beforerun()
+                    exec(src, globals())
+                except Exception as _:
+                    superpython.onexec_error()
+            document["run"].onclick = run
 
         </script>
     </head>
