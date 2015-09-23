@@ -59,11 +59,11 @@ class Ace:
         self._container = browser.doc["main"]
         self._editors = {}
         self.edit, self.project = edit, project
-        self.unescape = browser.unescape
+        # self.unescape = browser.unescape
 
         self.gui.window.addEventListener('resize', _ace_editor_resize, True)
         _ace_editor_resize()
-        self._code = self.unescape(code)
+        self._code = code
         self.add_editor(self._code[:])
 
     def annotate(self, row=1, message="indefinido"):
@@ -130,14 +130,13 @@ class Console:
         self._pyconsole = browser.doc["pyconsole"]
         self._pycanvas = browser.doc["pydiv"]
         self._pymessage = browser.doc["pymessage"]
-        self._run_or_code = self.run
         self.ace = ace
         self.jq = browser.jq
-        browser.doc["run"].onclick = self.run
+        # browser.doc["run"].onclick = self.run
         self._owrite = sys.stdout.write
         self._ewrite = sys.stderr.write
-        sys.stdout.write = self.write
-        sys.stderr.write = self.write
+        #sys.stdout.write = self.write
+        #sys.stderr.write = self.write
         self._pycanvas.html = '<img id="emmenu"' \
                               ' src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg"' \
                               ' alt="menu" title="menu" width="400px"/>'
@@ -186,34 +185,29 @@ class Console:
                      width="60%", height=200), show=dict(effect="fade", duration=800),
                 resizeStop=console_resize, dragStop=console_resize)
 
-    def run(self, _=0):
+    def beforerun(self):
         self._pyconsole.value = ''
         src = self.ace.get_content()  # .getCurrentText()
         self.display_canvas("block")
-        # print("self._run", src)
-        try:
-            self.display_canvas("block")
-            exec(src, globals())
-            self.ace.annotate(0)
-            state = 1
-        except Exception as _:
-            self._run_or_code = self.run
-            self._pycanvas.style.display = "none"
-            traceback.print_exc()
-            self.ace.annotate(0)
-            error = self._pyconsole.value
-            lines = error.split(' line ')
-            if len(lines) > 1:
-                try:
-                    line = int(lines[-1].split("\n")[0])
-                    error = error.split("\n")[-2]
-                    print(error)
-                    self.ace.annotate(line, error)
-                except Exception as _:
-                    pass
+        self.ace.annotate(0)
+        return src
 
-            state = 0
-        return state
+    def onexec_error(self):
+        # self._pycanvas.style.display = "none"
+        self.jq_canvas.dialog("close")
+        traceback.print_exc()
+        self.ace.annotate(0)
+        error = self._pyconsole.value
+        lines = error.split(' line ')
+        if len(lines) > 1:
+            try:
+                line = int(lines[-1].split("\n")[0])
+                error = error.split("\n")[-2]
+                print(error)
+                self.ace.annotate(line, error)
+            except Exception as _:
+                pass
+
     """
     def _code(self, _=0):
         self._run_or_code = self.run
@@ -241,6 +235,7 @@ class SuperPython:
         self.ace = self.name = self._console = None
         browser.doc["menu"].onclick = self.save
         self._timer = self.gui.timer.set_timeout(lambda _=0: self.save(autosaved=True), AUTOSAVE)
+        self.beforerun = self.onexec_error = None
 
     def _update_timer(self):
         self.gui.timer.clear_timeout(self._timer)
@@ -265,6 +260,9 @@ class SuperPython:
         self.ace = Ace(self.gui, self.edit, self.project, code)
         self.load(msg="New Empty Module")
         self._console = Console(self.gui, self.ace)
+        self.beforerun = self._console.beforerun
+        self.onexec_error = self._console.onexec_error
+        return self
 
     def save(self, _=0, autosaved=False):
         def on_complete(request):

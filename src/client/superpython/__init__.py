@@ -25,7 +25,7 @@ SuperPython - Pacote Cliente
 Define a função main do módulo superpython, criando uma instância de SuperPython.
 
 """
-__version__ = "0.1.0"
+__version__ = "1.1.0"
 from .core import SuperPython
 import os
 #  IS_GAE = os.environ['SERVER_SOFTWARE'].startswith('Development')
