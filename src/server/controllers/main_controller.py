@@ -17,53 +17,42 @@
 # Você deve ter recebido uma cópia da Licença Pública Geral GNU
 # junto com este programa, se não, veja em <http://www.gnu.org/licenses/>
 
-"""Controller handles routes starting with /RESOURCE_NAME.
+"""
+############################################################
+SuperPython - Controlador Principal
+############################################################
 
-Change this file's name and contents as appropriate to the
-resources your app exposes to clients.
+Controlador principal da funcionalidade do servidor web.
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request, response
-# from ..models.code_store import DB
+from bottle import Bottle, view, request
 from ..models import code_store as cs
-from . import project, get_project, project_visual_data, BRYTHON
+from . import project, get_project, BRYTHON
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
 
-
-@bottle.get('/')
-@view('index')
-@get_project
-def home():
-    """ Return User Selection at application root URL"""
-    # prj = request.query.proj
-    print("home project", project)
-    tops, items = project_visual_data()
-    return dict(user=project, result=items, selector=tops, brython=BRYTHON)  # IPOS[:2])
 
 
 @bottle.post('/editor')
 @view('projeto')
 @get_project
 def edit():
-    """ Return Project editor"""
+    """ Return Project editor.
+    """
     person = request.forms.get('module')
-    # if cs.DB.islogged(project, person):
-    #     redirect("/main")
     cursession, lastsession = cs.DB.login(project, person)
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
     print(""" Return Project editor""", lastcodetext)
-    # response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
-    # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
     return dict(projeto=person, codename=lastcodename, brython=BRYTHON)
 
 
 @bottle.get('/load')
 @get_project
 def load():
-    """ Return Project Module"""
+    """ Return Project Module.
+    """
     module = request.query.module
     code = cs.DB.load(module)
     print(""" Return Project Module""", module)
@@ -73,7 +62,8 @@ def load():
 @bottle.post('/save')
 @get_project
 def save():
-    """ Save given file into datastore"""
+    """ Save given file into datastore.
+    """
     codej = request.json
     codedict = {str(k): unicode(v) for k, v in codej.items()}
     print("code", codej["name"], project, codej, codedict)
@@ -84,7 +74,8 @@ def save():
 @bottle.post('/logout')
 @get_project
 def logout():
-    """ Logout from session"""
+    """ Logout from session.
+    """
     person = request.forms.get('person')
     cs.DB.logout(project, person)
     return "logout"

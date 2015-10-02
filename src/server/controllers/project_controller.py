@@ -21,7 +21,7 @@
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, HTTPError, request
+from bottle import Bottle, HTTPError, request
 from ..models import code_store as cs
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.

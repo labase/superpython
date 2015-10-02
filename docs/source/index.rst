@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to SuperPython's documentation!
-====================================
+=======================================
 
 Contents:
 
@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    intro.rst
-   release0_1_0.rst
+   release1_1_1.rst
    modules.rst
    tests.rst
 

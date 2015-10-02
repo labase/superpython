@@ -31,7 +31,7 @@ import sys
 if "AUTH_DOMAIN" in os.environ.keys():
     from google.appengine.ext import ndb
 else:
-    from lib.minimock import Mock
+    from minimock import Mock
     sys.modules['google.appengine.ext'] = Mock('google.appengine.ext')
     ndb = Mock('google.appengine.ext')
 

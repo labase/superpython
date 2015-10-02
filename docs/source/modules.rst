@@ -19,3 +19,18 @@ SuperPython - Módulos Principais
 .. note::
    Unidade de Modelo Cliente.
 
+
+.. automodule:: server.controllers.main_controller
+    :members:
+    :show-inheritance:
+    :platform: Web
+    :synopsis: Controlador principal da funcionalide Web.
+
+
+.. seealso::
+
+   Module :mod:`server.controllers.main_controller`
+
+.. note::
+   Controlador principal da funcionalide Web.
+

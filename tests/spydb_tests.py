@@ -35,13 +35,13 @@ if sys.version_info[0] == 2:
 else:
     from unittest.mock import MagicMock, patch, ANY
 
-import src.server.models.database as dbs
+import server.models.database as dbs
 
 class SpyDBTest(unittest.TestCase):
 
     def setUp(self):
         self.ndb = dbs.NDB  # = MagicMock(name="db")
-        from src.server.models.code_store import DB
+        from server.models.code_store import DB
         self.db = DB
         pass
 

@@ -20,7 +20,7 @@
 
 """
 ############################################################
-SuperPython - Teste
+SuperPython - Teste de Funcionalidade Web
 ############################################################
 
 Verifica a funcionalidade do servidor web.
@@ -30,7 +30,7 @@ __author__ = 'carlo'
 import unittest
 import sys
 
-import lib.bottle as bottle
+import bottle
 import os
 # import sys
 # project_server = '/'.join(os.getcwd().split('/')[:-1])
@@ -45,8 +45,8 @@ if sys.version_info[0] == 2:
 else:
     from unittest.mock import MagicMock, patch, ANY
 from webtest import TestApp
-from src import appbottle
-from src.server.models import code_store as cs
+from server.controllers import appbottle
+from server.models import code_store as cs
 
 class SpyWebTest(unittest.TestCase):
 
@@ -63,9 +63,11 @@ class SpyWebTest(unittest.TestCase):
 
     def test_default_page(self):
         app = TestApp(appbottle)
-        response = app.get('/main')
+        cs.DB.getlogged = MagicMock(name="dbl")
+        cs.DB.getlogged.side_effect = lambda *a, **args: (dict(jaspe=False), ["jaspe"])
+        response = app.get('/')
         self.assertEqual('200 OK', response.status)
-        self.assertTrue('USER: fake: superpython' in response)
+        self.assertTrue('<title>SuperPython</title>' in response.text, response.text[:1000])
 
     def test_editor(self):
         app = TestApp(appbottle)
@@ -92,7 +94,7 @@ class SpyWebTest(unittest.TestCase):
         response = app.post_json('/main/save', dict(person="projeto0", name="main", text="# main"))
         cs.DB.save.assert_called_once_with(text=u'# main', name=u'main', person=u'projeto0')
         self.assertEqual('200 OK', response.status)
-        self.assertTrue('file saved' in response)
+        self.assertTrue('main' in response.text, response.text)
 
     def test_import(self):
         app = TestApp(appbottle)
@@ -100,7 +102,7 @@ class SpyWebTest(unittest.TestCase):
         session.name = '2222'
         cs.DB.load = MagicMock(name="dbl")
         cs.DB.load.side_effect = lambda *a, **args: "#main"
-        response = app.get('/external/brython/Lib/site-packages/core.py')
+        response = app.get('/main/superpython/core.py')
         cs.DB.load.assert_called_once_with(name='core.py')
         self.assertEqual('200 OK', response.status)
         self.assertTrue('#main' in response)

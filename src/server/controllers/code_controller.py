@@ -23,7 +23,7 @@
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request, response
+from bottle import Bottle, view, request, response
 from ..models.code_store import DB
 import collections
 LIKERT = "nunca pouquíssimo pouco mediano muito muitíssimo sempre".split()
