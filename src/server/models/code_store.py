@@ -42,6 +42,8 @@ NAMES = "granito arenito" \
         " fluorita onix" \
         " feldspato jaspe agata sodalita alabastro".split()
 SNAMES = "aries touro gemeos cancer leao virgem libra escorpiao ofiuco sargitario capricornio aquario peixes".split()
+CNAMES = "chiclete framboesa red_velvet laranja baunilha limao goji morango capuccino marshmallow chocomenta blue_sky" \
+         " cereja pao_de_mel milho_verde erva_doce mirtilo uva nozes banana pistache tutifruti vinho cassis".split()
 
 
 class Program(dbs.NDB.Expando):
@@ -282,6 +284,7 @@ class Session(dbs.NDB.Expando):
         Session.create(name=uuid1().hex)
         Session._populate_persons("superpython", NAMES, OLDNA)
         Session._populate_persons("surdo", SNAMES, SNAMES)
+        Session._populate_persons("cups", CNAMES, CNAMES)
 
     @classmethod
     def _populate_persons(cls, projectname, persons, sprites):

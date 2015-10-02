@@ -25,7 +25,7 @@ from ..models import code_store as cs
 import collections
 Item = collections.namedtuple('Item', 'name picture x y ox oy')
 Par = collections.namedtuple('Par', 'x y')
-PROJECTS = "jardim spy super surdo mgeo".split()
+PROJECTS = "jardim spy super surdo mgeo cups".split()
 PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedonia1.png"
 IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
         Par(45, 104), Par(211, 108), Par(432, 107), Par(600, 108),
@@ -45,8 +45,8 @@ ONAME = "granito arenito" \
         " feldspato jaspe agata sodalita alabastro".split()
 STEPX = 921 / 6
 STEPY = 521 / 5
-BRYTHON = "/external/brython/brython.js"
-# BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
+# BRYTHON = "/external/brython/brython.js"
+BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
 # BRYTHON = "http://www.brython.info/src/brython.js"
 # import sys
 # project_server = '/'.join(os.getcwd().split('/')[:-1])

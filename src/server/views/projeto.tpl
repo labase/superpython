@@ -7,6 +7,7 @@
         <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
         <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
         <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>-->
+        <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/ace/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>

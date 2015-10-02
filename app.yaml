@@ -12,7 +12,7 @@ handlers:
   upload: src/client/(.*\.py)
 
 #- url: /external/brython/Lib/site-packages/.*\.py
-- url: /main/superpython/.*\.py
+- url: /main/.*\.py
   script: src.appbottle
 
 - url: /external/brython//Lib/(.*\.py)

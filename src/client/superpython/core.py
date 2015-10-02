@@ -135,8 +135,8 @@ class Console:
         # browser.doc["run"].onclick = self.run
         self._owrite = sys.stdout.write
         self._ewrite = sys.stderr.write
-        #sys.stdout.write = self.write
-        #sys.stderr.write = self.write
+        sys.stdout.write = self.write
+        sys.stderr.write = self.write
         self._pycanvas.html = '<img id="emmenu"' \
                               ' src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg"' \
                               ' alt="menu" title="menu" width="400px"/>'
