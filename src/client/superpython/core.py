@@ -244,6 +244,7 @@ class SuperPython:
     def logout_on_exit(self, ev):
         ev.returnValue = "SAIR?"
         try:
+            self.save()
             data = {"person": self.project}
 
             req = self.ajax.ajax()

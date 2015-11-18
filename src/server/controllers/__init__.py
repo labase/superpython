@@ -25,13 +25,15 @@ from ..models import code_store as cs
 import collections
 Item = collections.namedtuple('Item', 'name picture x y ox oy')
 Par = collections.namedtuple('Par', 'x y')
-PROJECTS = "jardim spy super surdo mgeo cups".split()
+PROJECTS = "jardim spy super surdo mgeo cups hero".split()
 PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedonia1.png"
 IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
         Par(45, 104), Par(211, 108), Par(432, 107), Par(600, 108),
         Par(78, 218), Par(214, 251), Par(431, 252), Par(564, 218),
         Par(127, 329), Par(212, 401), Par(432, 398), Par(528, 327),
-        Par(79, 434), Par(207, 542), Par(430, 542), Par(564, 429)]
+        Par(79, 434), Par(207, 542), Par(430, 542), Par(564, 429),
+        Par(45, 528), Par(320, 200), Par(320, 320), Par(320, 460), Par(600, 528),
+        Par(96, 644), Par(249, 664), Par(393, 664), Par(555, 644),]
 BPOS = [Par(-(dx*160), -(dy*120)) for dy in range(6) for dx in range(5)]
 NAMES = "granito _ _ _ _ arenito" \
         " calcita_laranja agua_marinha amazonita _ quartzo_rosa turmalina" \
