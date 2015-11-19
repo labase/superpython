@@ -52,7 +52,7 @@ def home():
     redirect('/main?proj=%s' % prj)
 
 
-@appbottle.error(404)
+@appbottle.error(code=404)
 def error_404(_):
     """Return a custom 404 error."""
     return 'Sorry, Nothing at this URL.'

@@ -50,8 +50,8 @@ Super Python - User Programming Interface
                 text-align: center;
             }
             #item {
-                height: 120px;
-                width: 130px;
+                height: 90px;
+                width: 90px;
                 margin: 5px;
                 display: inline-block;
             }
@@ -103,8 +103,22 @@ Super Python - User Programming Interface
                     alert("Nome incorreto, login falhou.")
                     return
             document["module"].value = user
+            document["project"].value = "{{ project }}"
             document.forms["select"].submit()
         window._request_login_if_available = _request_login_if_available
+        def _request_login_with_code():
+            #alert("%s, %s" % (user, blocked))
+            #return
+            dados = input("Digite modulo/arquivo.py").split("/")
+            dados = dados if len(dados) > 1 else dados + ['']
+            document["module"].value, document["code"].value = dados
+            document["project"].value = "{{ project }}"
+            document.forms["select"].submit()
+        window._request_login_with_code = _request_login_with_code
+        def _dismiss_error_code():
+            document["error"].style.display = "none"
+            return False
+        window._dismiss_error_code = _dismiss_error_code
         e =Edi()
         '''
         for i in range(20):
@@ -118,14 +132,14 @@ Super Python - User Programming Interface
     <div id="banner">
         <div id="menu" style="position:absolute; left:0px; top:0px;">
             % for proj in result:
-                <div id="item" style="position:absolute; left:{{ proj.x }}px; top:{{ proj.y+15 }}px;
-                    background-image: url(images/{{ user }}.jpg); background-position: {{ proj.ox }}px {{ proj.oy }}px;">
+                <div id="item" style="position:absolute; left:{{ proj.x+25 }}px; top:{{ proj.y+30 }}px;
+                    background-image: url(images/{{ project }}.jpg); background-position: {{ proj.ox-25 }}px {{ proj.oy -15 }}px;">
                 </div>
             %end
 
         </div>
         <div id="mask" style="position:absolute; left:0px; top:0px;">
-            <img src="/images/selector.png" alt="">
+            <img src="/images/selector.png" alt=""/>
         </div>
         <div id="selector" style="position:absolute; left:0px; top:0px;">
             <form id="select" method="post" action="main/editor">
@@ -136,9 +150,9 @@ Super Python - User Programming Interface
                               title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
                     </div>
                 %end
-            <svg width="800" height="800">
-            </svg>
                 <input id="module" name="module" type="hidden"/>
+                <input id="code" name="code" type="hidden"/>
+                <input id="project" name="project" type="hidden"/>
                 <script type="text/javascript">
                 function submitform(item)
                 {
@@ -147,6 +161,17 @@ Super Python - User Programming Interface
                 }
                 </script>
             </form>
+            <div id="secret"
+                 style="position:absolute; left:780px; top:767px; width=50px; min-height=50px" onclick="_request_login_with_code()">O</div>
+            <div id="error"
+                 style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: {{ ['none','block'][fault!=None] }};" onclick="_dismiss_error_code()">
+                <img src="/images/error.png"></img>
+                <img src="/images/rotgears.gif" style="position: fixed; top: 70%; left: 50%; transform: translate(-50%, -50%);"></img>
+                <div id="errmsg"
+                     style="position: fixed; top: 43%; left: 45%; transform: translate(-43%, -45%);" onclick="_dismiss_error_code()">
+                    <span style="color:white">{{ fault }}</span>
+                </div>
+            </div>
         </div>
     </div>
 

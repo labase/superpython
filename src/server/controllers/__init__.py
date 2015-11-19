@@ -28,12 +28,12 @@ Par = collections.namedtuple('Par', 'x y')
 PROJECTS = "jardim spy super surdo mgeo cups hero".split()
 PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/igeo/calcedonia1.png"
 IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
-        Par(45, 104), Par(211, 108), Par(432, 107), Par(600, 108),
-        Par(78, 218), Par(214, 251), Par(431, 252), Par(564, 218),
-        Par(127, 329), Par(212, 401), Par(432, 398), Par(528, 327),
+        Par(45, 104), Par(205, 110), Par(432, 107), Par(600, 108),
+        Par(78, 218), Par(214, 251), Par(320, 180), Par(431, 252), Par(564, 218),
+        Par(127, 329), Par(212, 401), Par(320, 330), Par(432, 398), Par(528, 327),
         Par(79, 434), Par(207, 542), Par(430, 542), Par(564, 429),
-        Par(45, 528), Par(320, 200), Par(320, 320), Par(320, 460), Par(600, 528),
-        Par(96, 644), Par(249, 664), Par(393, 664), Par(555, 644),]
+        Par(43, 548), Par(320, 470), Par(600, 528),
+        Par(96, 644), Par(249, 664), Par(393, 664), Par(555, 644)]
 BPOS = [Par(-(dx*160), -(dy*120)) for dy in range(6) for dx in range(5)]
 NAMES = "granito _ _ _ _ arenito" \
         " calcita_laranja agua_marinha amazonita _ quartzo_rosa turmalina" \
@@ -47,6 +47,7 @@ ONAME = "granito arenito" \
         " feldspato jaspe agata sodalita alabastro".split()
 STEPX = 921 / 6
 STEPY = 521 / 5
+DX, DY = (300, 300)
 # BRYTHON = "/external/brython/brython.js"
 BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
 # BRYTHON = "http://www.brython.info/src/brython.js"
@@ -62,7 +63,7 @@ if templates_dir not in bottle.TEMPLATE_PATH:
 project = ""
 
 
-def get_project(func):
+def get_project(func, **kw):
     def decorator():
         _project = request.query.proj
         print("get_project", _project)

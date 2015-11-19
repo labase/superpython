@@ -278,7 +278,7 @@ class SuperPython:
 
         src = self.ace.test_dirty(None)
         self._update_timer()
-        if not src:
+        if src is False:
             if not autosaved:
                 self._console.display_saved("ALREADY SAVED")
             return 1
