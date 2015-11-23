@@ -59,6 +59,8 @@
             </div>
             <div id="pydiv"  title="">
                 <span style="color:white">LOADING..</span>
+                <img src="/images/rotgears.gif" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" alt="gears"></img>
+
             </div>
             <div id="message">
                 <textarea id="pymessage" style="width:100%;height:100%;resize: none;display: none;" readonly></textarea>

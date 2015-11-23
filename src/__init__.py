@@ -17,7 +17,42 @@
 # Você deve ter recebido uma cópia da Licença Pública Geral GNU
 # junto com este programa, se não, veja em <http://www.gnu.org/licenses/>
 
-import os
-if "AUTH_DOMAIN" in os.environ.keys():
-    from google.appengine.ext import vendor
-    vendor.add('lib')
+
+"""Main.py is the top level script.
+
+Loads the Bottle framework and mounts controllers.  Also adds a custom error
+handler.
+"""
+from lib import bottle
+from lib.bottle import Bottle, redirect, request
+# name and list your controllers here so their routes become accessible.
+from server.controllers import main_controller, project_controller, code_controller
+# Enable debugging, which gives us tracebacks
+bottle.DEBUG = True
+
+# Run the Bottle wsgi application. We don't need to call run() since our
+# application is embedded within an App Engine WSGI application server.
+appbottle = Bottle()
+
+# Mount a new instance of bottle for each controller and URL prefix.
+# appbottle.mount("/external/brython/Lib/site-packages", project_controller.bottle)
+appbottle.mount("/main/superpython", project_controller.bottle)
+
+# Mount a new instance of bottle for each controller and URL prefix.
+appbottle.mount("/main", main_controller.bottle)
+appbottle.mount("/code", code_controller.bottle)
+# bottle.mount("/pontos", pontos_controller.bottle)
+
+
+@appbottle.get('/')
+def home():
+    """ Return Hello World at application root URL"""
+    prj = request.query.proj
+    print("home project /", prj)
+    redirect('/main?proj=%s' % prj)
+
+
+@appbottle.error(code=404)
+def error_404(_):
+    """Return a custom 404 error."""
+    return 'Sorry, Nothing at this URL.'

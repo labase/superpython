@@ -44,6 +44,11 @@ NAMES = "granito arenito" \
 SNAMES = "aries touro gemeos cancer leao virgem libra escorpiao ofiuco sargitario capricornio aquario peixes".split()
 CNAMES = "chiclete framboesa red_velvet laranja baunilha limao goji morango capuccino marshmallow chocomenta blue_sky" \
          " cereja pao_de_mel milho_verde erva_doce mirtilo uva nozes banana pistache tutifruti vinho cassis".split()
+HNAMES = "sonic mulher_maravilha chapolin mestre_kame coringa darth_vader batman arrow petra lanterna_verde yoda tarzan homem_aranha" \
+         " verinha stelar florzinha lindinha docinho flash".split()
+FNAMES = "abacate abacaxi acerola ameixa amora bananas caju caqui carambola cerejas damasco framboesas goiaba graviola" \
+         " jaboticaba jaca kiwi laranjas manga maracuja melancia mirtilos morangos pera pitanga" \
+         " sapoti tangerina tomate umbu uvas".split()
 
 
 class Program(dbs.NDB.Expando):
@@ -285,6 +290,8 @@ class Session(dbs.NDB.Expando):
         Session._populate_persons("superpython", NAMES, OLDNA)
         Session._populate_persons("surdo", SNAMES, SNAMES)
         Session._populate_persons("cups", CNAMES, CNAMES)
+        Session._populate_persons("hero", HNAMES, HNAMES)
+        Session._populate_persons("jardim", FNAMES, FNAMES)
 
     @classmethod
     def _populate_persons(cls, projectname, persons, sprites):

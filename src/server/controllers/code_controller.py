@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 # -*- coding: UTF8 -*-
-# Este arquivo é parte do programa Enplicaw
+# Este arquivo é parte do programa SuperPython
 # Copyright 2013-2015 Carlo Oliveira <carlo@nce.ufrj.br>,
 # `Labase <http://labase.selfip.org/>`__; `GPL <http://is.gd/3Udt>`__.
 #
-# Enplicaw é um software livre; você pode redistribuí-lo e/ou
+# SuperPython é um software livre; você pode redistribuí-lo e/ou
 # modificá-lo dentro dos termos da Licença Pública Geral GNU como
 # publicada pela Fundação do Software Livre (FSF); na versão 2 da
 # Licença.
@@ -23,95 +23,68 @@
 
 """
 __author__ = 'carlo'
-from bottle import Bottle, view, request, response
-from ..models.code_store import DB
-import collections
-LIKERT = "nunca pouquíssimo pouco mediano muito muitíssimo sempre".split()
-Item = collections.namedtuple('Item', 'label value')
-Likert = collections.namedtuple('Likert', 'label name value')
-TITLE = "Habilidades de Alunos - %s"
-PICTURE = "https://dl.dropboxusercontent.com/u/1751704/igames/img/superp%C3%BDthon.jpg"
-PROJECTS = "JardimBotanico SuperPlataforma SuperPython MuseuGeo".split()
-QNAME = "q%02d"
+from lib.bottle import Bottle, view, request, response, HTTPError
+from ..models import code_store as cs
+from . import BRYTHON, PROJECTS, DX, DY
+DEFAULT_CODE = """# default
+try:
+    import superpython.%s.main as main
+    main.main()
+except:
+    from browser import document, html
+    document["pydiv"].html = ""
+    document["pydiv"] <= html.IMG(src="/images/site_em_construcao_.jpg")
+"""
+
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
-def methodroute(route):
-    def decorator(f):
-        f.route = route
-        return f
-    return decorator
-'''
-class App(object):
-    @methodroute('/index/')
-    def index(self):
-        pass
-'''
+def decorator():
+    _project = request.query.proj
+    print("get_project", _project)
+    if not _project or _project not in PROJECTS:
+        _project = request.urlparts.hostname.split('.')
+        if _project and (_project[0] in PROJECTS):
+            _project = _project[0]
+        elif request.get_cookie('_spy_project_') in PROJECTS:
+            _project = request.get_cookie('_spy_project_')
+        else:
+            _project = "superpython"
+    return _project
+
+@bottle.get('/_<module>')
+@view('game')
+def game(module):
+    """ Return Project editor"""
+    project = decorator()
+    path = "superpython.%s.%s" % (project, module)
+    print("game(module)", path)
+    return dict(projeto=module, codename="main.py", path=path, brython=BRYTHON, dx=DX, dy=DY)
 
 
-@bottle.get('/')
-@view('index')
-def home():
-    """ Open the survey with surveyor identification.
-    """
-    ident = [dict(label="Nome", name="name"), dict(label="Escola", name="school")]
-    project = request.urlparts.geturl().split('/')[2].split('.')[0]
-    if project in PROJECTS:
-            response.set_cookie('_enplicaw_project_', "%s %s %s" % (project, "__", "__"))
-    else:
-        project = "SuperPython"
-        response.set_cookie('_enplicaw_project_', "%s %s %s" % (project, "__", "__"))
-    return dict(title=TITLE % project, image=PICTURE, identification=ident, submit="Enviar")
 
+@bottle.get('/superpython/<pypath:path>')
+def handle(pypath):
+    # project = request.get_cookie('_spy_project_')
+    code = cs.DB.load(name=pypath)
+    print('/<pypath:path>', pypath, code and code[:200])
+    if code:
+        return code
+    if "__init__" in pypath:
+        module = pypath.split("/")
+        # module.remove("__init__.py")
+        print('/<pypath:path__init__, pypath, module, project>', pypath, module)
+        if len(module) >= 3:
+            project, module, path = module[0], module[1], '/'.join(module[1:])
+            print('/<pypath:path__init__, module, project, cs.DB.ismember>', module, project, cs.DB.ismember(project, module))
+            if cs.DB.ismember(project, module):
+                code = cs.DB.load(name=path)
+                print('handle/<pypath:path>', path, code and code[:80])
+                if code:
+                    return code
+                else:
+                    return DEFAULT_CODE % module
 
-@bottle.post('/identify')
-@view('survey')
-def identify():
-    """ Collects the identification from surveyor an opens the survey form.
-    """
-    project = "SuperPython"
-    user = request.forms.get('name')
-    school = request.forms.get('text')
-    DB.instance(project, user, school, QUESTION)
-    response.set_cookie('_enplicaw_project_', "%s %s %s" % (project, user, school))
+        return "#"
 
-    survey = [Likert(label=question, name=qname, value=LIKERT) for qname, question in QUESTION]
-    return dict(title=TITLE % project, columns=len(LIKERT), survey=survey, submit="Enviar")
+    raise HTTPError(404, "No such module.")
 
-
-def _points():
-    """ Post the surveied data to the data base.
-    """
-    project = "SuperPython"
-    data = {a: b for a, b in request.POST.items()}
-    cookie = request.get_cookie('_enplicaw_project_')
-    _, author, _ = cookie.split()
-    surveydata = {q: LIKERT.index(value)+1 for q, value in data.items() if q in QITEM}
-    [DATA[q].update({data[q]:DATA[q][data[q]]+1}) for q in data.keys() if q in QITEM]
-    PLOT[data["name"]] = [LIKERT.index(data[key])+1 if key in data.keys() else 0
-                          for key in QITEM]+["ns".index(data["super"])]+[cookie]
-    DB.post(name=data["name"], classifier=data["super"],
-                 data=surveydata, session=DB.instance(project=project, author=author))
-    print(PLOT)
-    return data
-
-
-@bottle.post('/survey')
-@view('survey')
-def survey():
-    """ Collects the survey data from the form and provides a new form.
-    """
-    project = "SuperPython"
-    _points()
-    survey = [Likert(label=question, name=qname, value=LIKERT) for qname, question in QUESTION]
-    return dict(title=TITLE % project, columns=len(LIKERT), survey=survey, submit="Enviar")
-
-
-@bottle.post('/endsurvey')
-@view('resultado')
-def endsurvey():
-    """ Collects the survey data from the form and provides a sumary of collected data.
-    """
-    project = "SuperPython"
-    data = _points()
-    line = [Item(label=q, value=[DATA[q][i] for i in LIKERT]) for q in QITEM]
-    return dict(title=TITLE % project, data='', columns=LIKERT, result=line, submit="Enviar")
