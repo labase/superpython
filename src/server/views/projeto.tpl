@@ -25,7 +25,7 @@
             from javascript import JSObject
             from browser import window, document, html, ajax, svg, timer
             from jqueryui import jq
-            from superpython import main
+            import core
 
 
             class Browser:
@@ -37,7 +37,7 @@
                 jq = jq
                 timer = timer
 
-            superpython = main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}")
+            superpython = core.main(Browser, JSObject(window.ace), "{{ projeto }}").main("{{ codename }}")
             def run(self, _=0):
                 try:
                     src = superpython.beforerun()

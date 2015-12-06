@@ -142,7 +142,7 @@ Super Python - User Programming Interface
             <img src="/images/selector.png" alt=""/>
         </div>
         <div id="selector" style="position:absolute; left:0px; top:0px;">
-            <form id="select" method="post" action="main/editor">
+            <form id="select" method="post" action="/superpython/___init___.py">
                 % for item, sel in enumerate(selector):
                     <div id="{{ 'topper%d'%item }}"
                          style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">

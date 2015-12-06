@@ -29,7 +29,8 @@ import traceback
 import sys
 import json
 import collections
-
+# from . import __version__
+__version__ = "1.1.2"
 LOAD_MODULE_ = "/main/load?module="
 
 LOGOUT = "/main/logout"
@@ -330,3 +331,10 @@ class SuperPython:
         except Exception as _:
             state = 0
         return state
+
+
+
+def main(browse, canvas, edit):
+    print('SuperPython '+__version__)
+    superpython = SuperPython(browse, canvas, edit)
+    return superpython

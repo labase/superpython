@@ -26,13 +26,5 @@ Define a função main do módulo superpython, criando uma instância de SuperPy
 
 """
 __version__ = "1.1.1"
-from .core import SuperPython
-import os
 #  IS_GAE = os.environ['SERVER_SOFTWARE'].startswith('Development')
 IS_GAE = os.environ.get('SERVER_SOFTWARE') and os.environ['SERVER_SOFTWARE'].startswith('Development')
-
-
-def main(browse, canvas, edit):
-    print('SuperPython '+__version__)
-    superpython = SuperPython(browse, canvas, edit)
-    return superpython

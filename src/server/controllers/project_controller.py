@@ -21,14 +21,46 @@
 
 """
 __author__ = 'carlo'
-from bottle import Bottle, HTTPError, request
+from bottle import Bottle, HTTPError, request, view, TEMPLATE_PATH
 from ..models import code_store as cs
-
-bottle = Bottle()  # create another WSGI application for this controller and resource.
+from . import BRYTHON
+import os
+import bottle
+appbottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
+project_server = os.getcwd()
+# make sure the default templates directory is known to Bottle
+templates_dir = os.path.join(project_server, 'src/server/views/')
+# print(templates_dir)
+print("ctlinit ", project_server, templates_dir)
+if templates_dir not in bottle.TEMPLATE_PATH:
+    bottle.TEMPLATE_PATH.insert(0, templates_dir)
 
 
-@bottle.get('/<pypath:path>')
+@appbottle.post('/___init___.py')
+@view('projeto')
+def edit():
+    """ Return Project editor"""
+    module = request.forms.get('module')
+    code = request.forms.get('code')
+    project = request.forms.get('project')
+    # if cs.DB.islogged(project, person):
+    #     redirect("/main")
+    print ("Return Project editor", project, module)
+    if not cs.DB.ismember(project, module):
+        bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+
+    cursession, lastsession = cs.DB.login(project, module)
+    lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
+    lastcodename = '/'.join([module, code]) if code else lastcodename
+    print(""" Return Project editor""", lastcodename, TEMPLATE_PATH)
+    # response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
+    # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
+    return dict(projeto=module, codename=lastcodename, brython=BRYTHON)
+
+
+
+@appbottle.get('/<pypath:path>')
 def handle(pypath):
     project = request.get_cookie('_spy_project_')
     code = cs.DB.load(name=pypath)
