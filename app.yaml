@@ -13,7 +13,10 @@ handlers:
 
 #- url: /external/brython/Lib/site-packages/.*\.py
 - url: /main/.*\.py
-  script: src.server.controllers.appbottle
+  script: src.appbottle
+
+- url: /superpython/.*\.py
+  script: src.appbottle
 
 - url: /external/brython//Lib/(.*\.py)
   mime_type: text/plain
@@ -61,7 +64,7 @@ handlers:
   upload: static/(.*\.html)
 
 - url: .*  # This regex directs all routes to main.app
-  script: src.server.controllers.appbottle
+  script: src.appbottle
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See

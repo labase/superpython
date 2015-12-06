@@ -29,6 +29,12 @@ import traceback
 import sys
 import json
 import collections
+
+LOAD_MODULE_ = "/main/load?module="
+
+LOGOUT = "/main/logout"
+
+SAVE = "/main/save"
 Dims = collections.namedtuple('Dims', 'x y w h')
 GUI = None
 
@@ -85,7 +91,7 @@ class Ace:
         :returns Se o código foi modificado desde a última vez que foi salvo.
         """
         src = self.get_content()
-        dirty = src != self._code
+        dirty = (src != self._code)
         if code_saved:
             self._code = src[:]
         return dirty and src
@@ -147,7 +153,7 @@ class Console:
     def display_saved(self, message="SAVED"):
         self.jq_msg = self.jq['message'].dialog(
             dict(position=dict(my="left bottom", at="left bottom", of="#edit"),
-                 width=250, height=40, dialogClass="no-titlebar"), show=dict(effect="fade", duration=800),
+                 width=350, height=40, dialogClass="no-titlebar"), show=dict(effect="fade", duration=800),
             hide=dict(effect="fade", duration=1800), buttons=[])
         self._pymessage.style.display = "block"
         self._pymessage.value = message
@@ -248,10 +254,10 @@ class SuperPython:
             data = {"person": self.project}
 
             req = self.ajax.ajax()
-            req.open('POST', "logout")  # , async=False)
+            req.open('POST', LOGOUT)  # , async=False)
             req.set_header('content-type', 'application/x-www-form-urlencoded')
             req.send(data)
-            print("logout", data)
+            print(LOGOUT, data)
         except Exception as _:
             print("logout request error")
         return "SAIR?"
@@ -276,7 +282,8 @@ class SuperPython:
                 error = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
                 self._console.display_saved("NOT SAVED: " + error)
 
-        src = self.ace.test_dirty(None)
+        src = self.ace.test_dirty(False)
+        # print(SAVE, src)
         self._update_timer()
         if src is False:
             if not autosaved:
@@ -284,17 +291,19 @@ class SuperPython:
             return 1
         try:
             jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
+            # print(SAVE, jsrc)
 
             req = self.ajax.ajax()
             req.bind('complete', on_complete)
-            req.set_timeout('20000', lambda: self._console.display_saved("NOT SAVED: TIMEOUT"))
-            req.open('POST', "save", async=False)
+            req.set_timeout('20000', lambda _=0: self._console.display_saved("NOT SAVED: TIMEOUT"))
+            req.open('POST', SAVE, async=False)
             req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
             req.send(jsrc)
 
             state = 1
-        except Exception as _:
+        except Exception as error:
             state = 0
+            self._console.display_saved("NOT SAVED: ERROR -- %s" % error)
         return state
 
     def load(self, _=0, msg=None):
@@ -313,7 +322,7 @@ class SuperPython:
             req = self.ajax.ajax()
             req.bind('complete', on_complete)
             req.set_timeout('20000', lambda: self._console.display_saved("NOT LOADED: TIMEOUT"))
-            req.open('GET', "load?module="+filename, async=False)
+            req.open('GET', LOAD_MODULE_ + filename, async=False)
             req.set_header('content-type', 'application/x-www-form-urlencoded')
             req.send()
 
