@@ -6,9 +6,9 @@ threadsafe: yes
 
 handlers:
 
-- url: /(superpython/__init__\.py|superpython/core\.py)
+- url: (/superpython/.*/.*/__core__\.py|superpython/.*/.*/__init__\.py)
   mime_type: text/plain
-  static_files: src/client/\1
+  static_files: src/client/superpython/core.py
   upload: src/client/(.*\.py)
 
 #- url: /external/brython/Lib/site-packages/.*\.py

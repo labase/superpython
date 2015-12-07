@@ -77,12 +77,12 @@ def get_project(func, **kw):
     return decorator
 
 
-@get_project
-def project_visual_data():
+def project_visual_data(project):
     """ Return User Selection at application root URL"""
     def gxy(project_name):
         index = person_sprite.index(project_name)
         return Par(-STEPX * (index % 6), -STEPY * (index//6))
+    print("""project_visual_data""", project)
     persons, person_sprite = cs.DB.getlogged(project)
     pic_size = len(persons)
     sorted_persons = sorted(persons.keys())

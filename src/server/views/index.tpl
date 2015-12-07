@@ -95,7 +95,7 @@ Super Python - User Programming Interface
 
                 print(ev.target.id, ev.clientX, ev.clientY)
         def _request_login_if_available(user, blocked):
-            #alert("%s, %s" % (user, blocked))
+            alert("%s, %s" % (user, blocked))
             #return
             if blocked:
                 user_name = input("Este grupo esta em uso, digite o nome deste grupo para assumir o controle:")
@@ -104,6 +104,7 @@ Super Python - User Programming Interface
                     return
             document["module"].value = user
             document["project"].value = "{{ project }}"
+            document.forms["select"].action = document.forms["select"].action % user
             document.forms["select"].submit()
         window._request_login_if_available = _request_login_if_available
         def _request_login_with_code():
@@ -113,6 +114,7 @@ Super Python - User Programming Interface
             dados = dados if len(dados) > 1 else dados + ['']
             document["module"].value, document["code"].value = dados
             document["project"].value = "{{ project }}"
+            document.forms["select"].action = document.forms["select"].action % dados[0]
             document.forms["select"].submit()
         window._request_login_with_code = _request_login_with_code
         def _dismiss_error_code():
@@ -142,7 +144,7 @@ Super Python - User Programming Interface
             <img src="/images/selector.png" alt=""/>
         </div>
         <div id="selector" style="position:absolute; left:0px; top:0px;">
-            <form id="select" method="post" action="/superpython/___init___.py">
+            <form id="select" method="post" action="/superpython/{{ project }}/%s/___init___.py">
                 % for item, sel in enumerate(selector):
                     <div id="{{ 'topper%d'%item }}"
                          style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">

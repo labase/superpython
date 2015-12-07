@@ -37,15 +37,13 @@ if templates_dir not in bottle.TEMPLATE_PATH:
     bottle.TEMPLATE_PATH.insert(0, templates_dir)
 
 
-@appbottle.post('/___init___.py')
+@appbottle.post('/<proj>/<pak>/___init___.py')
 @view('projeto')
-def edit():
+def edit(proj, pak):
     """ Return Project editor"""
     module = request.forms.get('module')
     code = request.forms.get('code')
     project = request.forms.get('project')
-    # if cs.DB.islogged(project, person):
-    #     redirect("/main")
     print ("Return Project editor", project, module)
     if not cs.DB.ismember(project, module):
         bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
@@ -54,25 +52,20 @@ def edit():
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
     lastcodename = '/'.join([module, code]) if code else lastcodename
     print(""" Return Project editor""", lastcodename, TEMPLATE_PATH)
-    # response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
-    # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
     return dict(projeto=module, codename=lastcodename, brython=BRYTHON)
 
 
 
-@appbottle.get('/<pypath:path>')
-def handle(pypath):
-    project = request.get_cookie('_spy_project_')
-    code = cs.DB.load(name=pypath)
-    print('/<pypath:path>', pypath, project, code)
+@appbottle.get('/<proj>/<pak>/<mod>/<pypath:path>')
+def handle(proj, pak, mod, pypath):
+    project = proj
+    module = '/'.join([mod, pypath])
+    code = cs.DB.load(name=module)
     if code:
         return code
     if "__init__" in pypath:
-        module = pypath.split("/")
-        print('/<pypath:path__init__, pypath, module, project>', pypath, module, project)
-        module = module[0] if len(module) >= 2 else None
-        print('/<pypath:path__init__, module, project, cs.DB.ismember>', module, project, cs.DB.ismember(project, module))
-        if cs.DB.ismember(project, module):
+        print('/<pypath:path__init__, module, project, cs.DB.ismember>', module, project, cs.DB.ismember(project, mod))
+        if cs.DB.ismember(project, mod):
             return "#"
 
     raise HTTPError(404, "No such module.")
