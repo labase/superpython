@@ -95,7 +95,7 @@ Super Python - User Programming Interface
 
                 print(ev.target.id, ev.clientX, ev.clientY)
         def _request_login_if_available(user, blocked):
-            alert("%s, %s" % (user, blocked))
+            #alert("%s, %s" % (user, blocked))
             #return
             if blocked:
                 user_name = input("Este grupo esta em uso, digite o nome deste grupo para assumir o controle:")

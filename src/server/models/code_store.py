@@ -49,6 +49,12 @@ HNAMES = "sonic mulher_maravilha chapolin mestre_kame coringa darth_vader batman
 FNAMES = "abacate abacaxi acerola ameixa amora bananas caju caqui carambola cerejas damasco framboesas goiaba graviola" \
          " jaboticaba jaca kiwi laranjas manga maracuja melancia mirtilos morangos pera pitanga" \
          " sapoti tangerina tomate umbu uvas".split()
+ENAMES = ['sirius', 'canopus', 'arcturus', 'vega', 'capella', 'rigel', 'procyon', 'achernar', 'hadar', 'altair',
+          'acrux', 'spica', 'antares', 'pollux', 'deneb', 'mimosa', 'regulus', 'adhara', 'castor', 'gacrux', 'shaula',
+          'alnilam', 'alnair', 'regor', 'alioth', 'kaus', 'mirfak', 'dubhe', 'wezen', 'alkaid', 'sargas',
+          'avior', 'atria', 'alhena', 'peacock', 'polaris', 'mirzam', 'alphard', 'algieba', 'hamal']
+
+
 
 
 class Program(dbs.NDB.Expando):
@@ -201,8 +207,15 @@ class Session(dbs.NDB.Expando):
         return query and query[0]
 
     @classmethod
-    def create(cls, **kwargs):
-        instance = cls(**kwargs)
+    def create(cls, name, person=None, project=None):
+        session = Session.nget(name)
+        print("create(cls, **kwargs)", session, person, project, name)
+        if session:
+            session.project = project
+            session.person = person
+            session.put()
+            return session
+        instance = cls(person=person, project=project, name=name)
         instance.put()
         return instance
 
@@ -237,15 +250,15 @@ class Session(dbs.NDB.Expando):
         project.removesession(person)
 
     @classmethod
-    def login(cls, project, person):
+    def login(cls, project, person, session=None):
         print("project, person", project, person)
-        sessionname = uuid1().hex
+        sessionname = session if Session.nget(session) else str(uuid1())
         project = Project.nget(project)
         project.updatesession(person)
         person = Person.nget(person)
         print("project, person", project, person)
         cursession = cls.create(project=project.key, person=person.key, name=sessionname)
-        lastsession = person.lastsession or cursession.key
+        lastsession = person.lastsession or cursession
         person.updatesession(cursession.key)
         return cursession, lastsession
 
@@ -292,6 +305,7 @@ class Session(dbs.NDB.Expando):
         Session._populate_persons("cups", CNAMES, CNAMES)
         Session._populate_persons("hero", HNAMES, HNAMES)
         Session._populate_persons("jardim", FNAMES, FNAMES)
+        Session._populate_persons("star", ENAMES, ENAMES)
 
     @classmethod
     def _populate_persons(cls, projectname, persons, sprites):

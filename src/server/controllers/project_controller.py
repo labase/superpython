@@ -20,12 +20,12 @@
 """Controller handles routes for in project imports.
 
 """
-__author__ = 'carlo'
-from bottle import Bottle, HTTPError, request, view, TEMPLATE_PATH
+from bottle import Bottle, HTTPError, request, response, view, TEMPLATE_PATH
 from ..models import code_store as cs
 from . import BRYTHON
 import os
 import bottle
+__author__ = 'carlo'
 appbottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
 project_server = os.getcwd()
@@ -47,13 +47,15 @@ def edit(proj, pak):
     print ("Return Project editor", project, module)
     if not cs.DB.ismember(project, module):
         bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+    cookie = request.get_cookie('_spy_project_')
 
-    cursession, lastsession = cs.DB.login(project, module)
+    cursession, lastsession = cs.DB.login(project, module, cookie)
+    response.set_cookie('_spy_project_', cursession.name)
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
+    print("edit(proj, pak)", cookie, cursession.name, module, code)
     lastcodename = '/'.join([module, code]) if code else lastcodename
-    print(""" Return Project editor""", lastcodename, TEMPLATE_PATH)
+    print(""" Return Project editor""", lastcodename, bottle.TEMPLATE_PATH)
     return dict(projeto=module, codename=lastcodename, brython=BRYTHON)
-
 
 
 @appbottle.get('/<proj>/<pak>/<mod>/<pypath:path>')
