@@ -53,6 +53,10 @@ ENAMES = ['sirius', 'canopus', 'arcturus', 'vega', 'capella', 'rigel', 'procyon'
           'acrux', 'spica', 'antares', 'pollux', 'deneb', 'mimosa', 'regulus', 'adhara', 'castor', 'gacrux', 'shaula',
           'alnilam', 'alnair', 'regor', 'alioth', 'kaus', 'mirfak', 'dubhe', 'wezen', 'alkaid', 'sargas',
           'avior', 'atria', 'alhena', 'peacock', 'polaris', 'mirzam', 'alphard', 'algieba', 'hamal']
+KNAMES = ['adware', 'anonymous', 'autorun', 'backdoor', 'boot', 'botnet', 'hijacker', 'attack', 'overflow', 'chain',
+          'cookie', 'darknet', 'leakage', 'loss', 'theft', 'denial', 'driveby', 'exploit', 'fake', 'hacker', 'hoax',
+          'honeypot', 'worm', 'keylogging', 'malware', 'parasitic', 'patches', 'phishing', 'unwanted', 'ransomware',
+          'rootkit', 'engineer', 'spam', 'spoofing', 'spyware', 'injection', 'suspicious', 'trojan', 'virus', 'zombie']
 
 
 
@@ -306,6 +310,7 @@ class Session(dbs.NDB.Expando):
         Session._populate_persons("hero", HNAMES, HNAMES)
         Session._populate_persons("jardim", FNAMES, FNAMES)
         Session._populate_persons("star", ENAMES, ENAMES)
+        Session._populate_persons("hacker", KNAMES, KNAMES)
 
     @classmethod
     def _populate_persons(cls, projectname, persons, sprites):

@@ -7,7 +7,9 @@
         <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
         <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
         <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js" type="text/javascript" charset="utf-8"></script>
-        <script type="text/javascript" src="{{ brython }}"></script>
+        % for scp in brython:
+        <script type="text/javascript" src="{{ scp  }}"></script>
+        % end
 
         <script type="text/python">
             import {{ path }}

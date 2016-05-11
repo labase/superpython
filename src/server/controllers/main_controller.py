@@ -69,5 +69,6 @@ def save():
 def logout():
     """ Logout from session"""
     person = request.forms.get('person')
+    print("logout - request.forms.get('person')", person, project)
     cs.DB.logout(project, person)
     return "logout"

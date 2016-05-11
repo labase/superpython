@@ -40,11 +40,17 @@ if templates_dir not in bottle.TEMPLATE_PATH:
 @appbottle.post('/<proj>/<pak>/___init___.py')
 @view('projeto')
 def edit(proj, pak):
-    """ Return Project editor"""
+    """
+    Retorna a página de edição.
+
+    :param proj: Projeto de Edição.
+    :param pak: Pacote a ser editado.
+    :return: Nome do módulo, nome do arquivo, lista de scripts incluídos, nome do projeto.
+    """
     module = request.forms.get('module')
     code = request.forms.get('code')
     project = request.forms.get('project')
-    print ("Return Project editor", project, module)
+    print ("Return Project editor", project, module, proj, pak)
     if not cs.DB.ismember(project, module):
         bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
     cookie = request.get_cookie('_spy_project_')
@@ -52,14 +58,23 @@ def edit(proj, pak):
     cursession, lastsession = cs.DB.login(project, module, cookie)
     response.set_cookie('_spy_project_', cursession.name)
     lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
-    print("edit(proj, pak)", cookie, cursession.name, module, code)
+    # print("edit(proj, pak)", cookie, cursession.name, module, code)
     lastcodename = '/'.join([module, code]) if code else lastcodename
     print(""" Return Project editor""", lastcodename, bottle.TEMPLATE_PATH)
-    return dict(projeto=module, codename=lastcodename, brython=BRYTHON)
+    return dict(modulo=module, codename=lastcodename, brython=BRYTHON, projeto=project)
 
 
 @appbottle.get('/<proj>/<pak>/<mod>/<pypath:path>')
 def handle(proj, pak, mod, pypath):
+    """
+    Gerencia chamadas de __init__.
+
+    :param proj: Projeto de Edição.
+    :param pak: Pacote a ser editado.
+    :param mod: Módulo a ser editado.
+    :param pypath: Caminho a ser editado.
+    :return:  Um comentário **#**
+    """
     project = proj
     module = '/'.join([mod, pypath])
     code = cs.DB.load(name=module)

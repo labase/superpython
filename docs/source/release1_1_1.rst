@@ -60,7 +60,7 @@ Uma nova versão deve suportar o monitoramento  da atividade dos alunos.
 Lançamentos Anteriores e Posteriores
 ====================================
 
-Próximo Lançamento: A ser definido :ref:`Lançamento 1.1.2 <release1_1_1>`
+Próximo Lançamento: Maio 2016 :ref:`Lançamento 1.1.2 <release1_1_2>`
 
 Lançamento Anterior: Julho 2015 :ref:`Lançamento 0.1.0 <release0_1_0>`
 

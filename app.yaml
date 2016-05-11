@@ -1,5 +1,5 @@
 application: super-py
-version: 110
+version: 112
 runtime: python27
 api_version: 1
 threadsafe: yes

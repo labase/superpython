@@ -15,17 +15,19 @@ Super Python - User Programming Interface
 <html>
 <head>
     <title>SuperPython</title>
-    <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
-    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="style.css" type="text/css" />
-    <script type="text/javascript" src="{{ brython  }}"></script>
+    <meta http-equiv="content-type" content="application/xml;charset=utf-8"/>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+    % for scp in brython:
+    <script type="text/javascript" src="{{ scp  }}"></script>
+    % end
     <!--
     <script type="text/javascript" src="external/brython/py_VFS.js"></script>
     <script type="text/javascript" src="libs/custom_VFS.js"></script>
     <script type="text/python" src="libs/importhooks/localstorage.py"></script>
     <script type="text/python" src="libs/importhooks/custom_VFS.py"></script>
     -->
-        <style>
+    <style>
             body, html {
                 margin: 0;
                 height: 100%;
@@ -63,7 +65,8 @@ Super Python - User Programming Interface
             }
 
 
-        </style>
+
+    </style>
 
     <script type="text/python">
         from browser import alert, document, window
@@ -127,30 +130,30 @@ Super Python - User Programming Interface
             document["topper%d" % i].onclick = e._on_mouse_down
             document["topper%d" % i].onmousemove = e._on_mouse_over
         '''
+
     </script>
 </head>
-<body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true,
-                       custom_import_funcs:[import_hooks]})" background="/images/pipe_back.jpg">
-    <div id="banner">
-        <div id="menu" style="position:absolute; left:0px; top:0px;">
-            % for proj in result:
-                <div id="item" style="position:absolute; left:{{ proj.x+25 }}px; top:{{ proj.y+30 }}px;
-                    background-image: url(images/{{ project }}.jpg); background-position: {{ proj.ox-25 }}px {{ proj.oy -15 }}px;">
-                </div>
-            %end
-
-        </div>
-        <div id="mask" style="position:absolute; left:0px; top:0px;">
-            <img src="/images/selector.png" alt=""/>
-        </div>
-        <div id="selector" style="position:absolute; left:0px; top:0px;">
+<body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">
+<div id="banner">
+]    <div id="mask" style="position:absolute; left:0px; top:0px; background-image: url(images/Bumpplat.jpg); height: 1000px; width: 890px">
+        <div id="selector" style="position:float; left:0px; top:0px; padding: 60px">
             <form id="select" method="post" action="/superpython/{{ project }}/%s/___init___.py">
-                % for item, sel in enumerate(selector):
-                    <div id="{{ 'topper%d'%item }}"
-                         style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">
-                         <img src="images/crank.png" width="100px" alt="{{ sel.name }}"
-                              title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}"/>
+                % for item, (sel, proj) in enumerate(zip(selector, result)):
+                <div id="{{ 'topper%d'%item }}"
+                     style="background-image: url(images/stripped_paper.png); background-size: 100% 100%; margin: 20px 7px; width: 110px;
+                     height: 90px; float: left; text-align:center;"
+                     onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">
+                     <div id="itemimg" style="position:relative; margin-top: 3px; margin-left: 30px; width: 50px; height: 50px;
+                                background-image: url(images/{{ project }}.jpg); background-position: {{ proj.ox-45 }}px {{ proj.oy -25 }}px;">
+
                     </div>
+                    <img src="images/spk.png" width="56px" height="60px" alt="{{ sel.name }}"
+                         style="text-align:center; position:relative; margin-left: -1px; left: 0px; top: -60px"/>
+                     <img src="images/hazard-tread-yellow-black.png" width="100px" alt="{{ sel.name }}"
+                         title="{{ sel.name }}" style="opacity:{{ [0,1][sel.picture] }}; position:relative; margin-top: -54px; left: 0px"/>
+
+                    <span style="text-align:center; position:relative; margin-top: 40px; left: 0px; top: -50px">{{ sel.name }}</span>
+                </div>
                 %end
                 <input id="module" name="module" type="hidden"/>
                 <input id="code" name="code" type="hidden"/>
@@ -161,22 +164,31 @@ Super Python - User Programming Interface
                   document.getElementById('module').value = item
                   document.forms["select"].submit();
                 }
+
                 </script>
             </form>
             <div id="secret"
-                 style="position:absolute; left:780px; top:767px; width=50px; min-height=50px" onclick="_request_login_with_code()">O</div>
+                 style="position:absolute; left:820px; top:824px; width=50px; min-height=50px"
+                 onclick="_request_login_with_code()">O
+            </div>
             <div id="error"
-                 style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: {{ ['none','block'][fault!=None] }};" onclick="_dismiss_error_code()">
+                 style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: {{ ['none','block'][fault!=None] }};"
+                 onclick="_dismiss_error_code()">
                 <img src="/images/error.png"></img>
-                <img src="/images/rotgears.gif" style="position: fixed; top: 70%; left: 50%; transform: translate(-50%, -50%);"></img>
+                <img src="/images/rotgears.gif"
+                     style="position: fixed; top: 70%; left: 50%; transform: translate(-50%, -50%);"></img>
                 <div id="errmsg"
-                     style="position: fixed; top: 43%; left: 45%; transform: translate(-43%, -45%);" onclick="_dismiss_error_code()">
+                     style="position: fixed; top: 43%; left: 45%; transform: translate(-43%, -45%);"
+                     onclick="_dismiss_error_code()">
                     <span style="color:white">{{ fault }}</span>
                 </div>
             </div>
         </div>
+        ---
     </div>
+
+</div>
 
 </body>
 </html>
-                 <!--style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">-->
+        <!--style="position:absolute; left:{{ sel.x+30 }}px; top:{{ sel.y+25 }}px;" onclick="_request_login_if_available('{{ sel.name }}', {{ [0, 1][sel.picture] }})">-->

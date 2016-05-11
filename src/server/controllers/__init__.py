@@ -25,7 +25,7 @@ from ..models import code_store as cs
 import collections
 Item = collections.namedtuple('Item', 'name picture x y ox oy')
 Par = collections.namedtuple('Par', 'x y')
-PROJECTS = "jardim spy super surdo mgeo cups hero".split()
+PROJECTS = "jardim spy super surdo mgeo cups hero star hacker".split()
 
 IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
         Par(45, 104), Par(205, 110), Par(432, 107), Par(600, 108),
@@ -33,7 +33,10 @@ IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
         Par(127, 329), Par(212, 401), Par(320, 330), Par(432, 398), Par(528, 327),
         Par(79, 434), Par(207, 542), Par(430, 542), Par(564, 429),
         Par(43, 548), Par(320, 470), Par(600, 528),
-        Par(96, 644), Par(249, 664), Par(393, 664), Par(555, 644)]
+        Par(96, 644), Par(249, 664), Par(393, 664), Par(555, 644),
+        Par(96, 744), Par(249, 764), Par(393, 764), Par(555, 744),
+        Par(96, 844), Par(249, 864), Par(393, 864), Par(555, 844),
+        Par(96, 944), Par(249, 964), Par(393, 964), Par(555, 944)]
 BPOS = [Par(-(dx*160), -(dy*120)) for dy in range(6) for dx in range(5)]
 
 STEPX = 921 / 6
@@ -41,7 +44,10 @@ STEPY = 521 / 5
 DX, DY = (300, 300)
 # BRYTHON = "/external/brython/brython.js"
 # BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/Brython3.2.3/brython.js"
-BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"
+# BRYTHON = ["https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"]
+BRYTHON = ["https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.7/phaser.min.js"]
+BRYTHON += ["https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"]
+# BRYTHON += ["https://cdn.rawgit.com/brython-dev/brython/3.2.6/www/src/brython.js"]
 # BRYTHON = "http://www.brython.info/src/brython.js"
 # import sys
 # project_server = '/'.join(os.getcwd().split('/')[:-1])

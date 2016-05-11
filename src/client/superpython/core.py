@@ -33,7 +33,7 @@ import collections
 __version__ = "1.1.2"
 LOAD_MODULE_ = "/main/load?module="
 
-LOGOUT = "/main/logout"
+LOGOUT = "/main/logout?proj="
 
 SAVE = "/main/save"
 Dims = collections.namedtuple('Dims', 'x y w h')
@@ -233,9 +233,9 @@ class SuperPython:
     :param browser: Referência ao módulo navegador do Brython
     """
 
-    def __init__(self, browser, edit, project):
+    def __init__(self, browser, edit, project, projeto):
         """Constroi os objetos iniciais. """
-        self.edit, self.project = edit, project
+        self.edit, self.project, self.projeto = edit, project, projeto
         self.gui = browser
         browser.window.addEventListener("beforeunload", self.logout_on_exit)
         self.ajax = browser.ajax
@@ -255,10 +255,10 @@ class SuperPython:
             data = {"person": self.project}
 
             req = self.ajax.ajax()
-            req.open('POST', LOGOUT)  # , async=False)
+            req.open('POST', LOGOUT + self.projeto)  # , async=False)
             req.set_header('content-type', 'application/x-www-form-urlencoded')
             req.send(data)
-            print(LOGOUT, data)
+            print(LOGOUT + self.projeto, data)
         except Exception as _:
             print("logout request error")
         return "SAIR?"
@@ -333,8 +333,16 @@ class SuperPython:
         return state
 
 
+def main(browse, canvas, edit, projeto):
+    """
+    Cria uma instância da classe Super Python.
 
-def main(browse, canvas, edit):
+    :param browse: Módulo browser do Brython.
+    :param canvas: Div *pydiv* onde se desenha gráficos.
+    :param edit:
+    :param projeto: Nome do projet0.
+    :return: instância da classe Super Python.
+    """
     print('SuperPython '+__version__)
-    superpython = SuperPython(browse, canvas, edit)
+    superpython = SuperPython(browse, canvas, edit, projeto)
     return superpython
