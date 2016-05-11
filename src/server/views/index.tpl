@@ -106,6 +106,7 @@ Super Python - User Programming Interface
                     alert("Nome incorreto, login falhou.")
                     return
             document["module"].value = user
+            document["code"].value = ""
             document["project"].value = "{{ project }}"
             document.forms["select"].action = document.forms["select"].action % user
             document.forms["select"].submit()
