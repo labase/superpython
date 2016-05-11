@@ -86,10 +86,11 @@ def get_project(func, **kw):
 def project_visual_data(project):
     """ Return User Selection at application root URL"""
     def gxy(project_name):
-        index = person_sprite.index(project_name)
+        index = person_sprite.index(project_name) if project_name in person_sprite else 0
         return Par(-STEPX * (index % 6), -STEPY * (index//6))
     print("""project_visual_data""", project)
     persons, person_sprite = cs.DB.getlogged(project)
+    print("project_visual_data", persons)
     pic_size = len(persons)
     sorted_persons = sorted(persons.keys())
     tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:pic_size], IPOS)]

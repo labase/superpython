@@ -25,7 +25,6 @@ resources your app exposes to clients.
 """
 __author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response, redirect, HTTPError
-import lib.bottle as bt
 from ..models import code_store as cs
 from . import project, get_project, project_visual_data, BRYTHON
 

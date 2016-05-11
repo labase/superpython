@@ -25,6 +25,7 @@ from ..models import code_store as cs
 from . import BRYTHON
 import os
 import bottle
+import lib.bottle as bt
 __author__ = 'carlo'
 appbottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -48,20 +49,17 @@ def edit(proj, pak):
     :return: Nome do módulo, nome do arquivo, lista de scripts incluídos, nome do projeto.
     """
     module = request.forms.get('module')
-    code = request.forms.get('code')
+    code = request.forms.get('code') or "main.py"
     project = request.forms.get('project')
-    print ("Return Project editor", project, module, proj, pak)
-    if not cs.DB.ismember(project, module):
-        bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
-    cookie = request.get_cookie('_spy_project_')
-
-    cursession, lastsession = cs.DB.login(project, module, cookie)
-    response.set_cookie('_spy_project_', cursession.name)
-    lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
-    # print("edit(proj, pak)", cookie, cursession.name, module, code)
-    lastcodename = '/'.join([module, code]) if code else lastcodename
-    print(""" Return Project editor""", lastcodename, bottle.TEMPLATE_PATH)
-    return dict(modulo=module, codename=lastcodename, brython=BRYTHON, projeto=project)
+    code = '/'.join([module, code])  # if code else lastcodename
+    print ("Return Project editor", project, module, proj, pak, code)
+    if not cs.DB.load(code):
+        print ("Return Project editor not cs.DB.ismember",
+               "/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+        # bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+        cs.DB.save(person=module, name=code, text="#%s" % code)
+    print(""" Return Project editor dict""", dict(modulo=module, codename=code, brython=BRYTHON, projeto=project))
+    return dict(modulo=module, codename=code, brython=BRYTHON, projeto=project)
 
 
 @appbottle.get('/<proj>/<pak>/<mod>/<pypath:path>')

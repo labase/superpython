@@ -66,8 +66,7 @@ Questões e Problemas Conhecidos
 ===============================
 
 1.  Ainda está congelado na versão antiga do Brython 3.0.2
-#.  Ao ser instalado um novo projeto, todos os usuários dão erro na primeira rodada.
-#.  Aparece uma imagem espúria *em construção* quando roda o jog *stand alone*.
+#.  Aparece uma imagem espúria *em construção* quando roda o jogo *stand alone*.
 
 Lançamentos Anteriores e Posteriores
 ====================================
