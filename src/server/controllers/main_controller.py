@@ -24,8 +24,7 @@ resources your app exposes to clients.
 
 """
 __author__ = 'carlo'
-from lib.bottle import Bottle, view, request, response
-# from ..models.code_store import DB
+from lib.bottle import Bottle, view, request, response, redirect, HTTPError
 from ..models import code_store as cs
 from . import project, get_project, project_visual_data, BRYTHON
 
@@ -35,33 +34,17 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 @bottle.get('/')
 @view('index')
-@get_project
 def home():
     """ Return User Selection at application root URL"""
-    # prj = request.query.proj
-    print("home project", project)
-    tops, items = project_visual_data()
-    return dict(user=project, result=items, selector=tops, brython=BRYTHON)  # IPOS[:2])
-
-
-@bottle.post('/editor')
-@view('projeto')
-@get_project
-def edit():
-    """ Return Project editor"""
-    person = request.forms.get('module')
-    # if cs.DB.islogged(project, person):
-    #     redirect("/main")
-    cursession, lastsession = cs.DB.login(project, person)
-    lastcodename, lastcodetext = cs.DB.lastcode(lastsession)
-    print(""" Return Project editor""", lastcodetext)
-    # response.set_cookie('_spy_project_', project)  # , secret=cursession.name)
-    # cs.DB.logout(project, person)  # XXXXXXXXXXXXXX REMOVE
-    return dict(projeto=person, codename=lastcodename, brython=BRYTHON)
+    module = request.query.module
+    project = request.query.proj or "spy"
+    module = "NOT FOUND: %s" % module.upper() if module else None
+    # print("home project", project)
+    tops, items = project_visual_data(project)
+    return dict(project=project, result=items, selector=tops, brython=BRYTHON, fault=module)
 
 
 @bottle.get('/load')
-@get_project
 def load():
     """ Return Project Module"""
     module = request.query.module
@@ -71,12 +54,11 @@ def load():
 
 
 @bottle.post('/save')
-@get_project
 def save():
     """ Save given file into datastore"""
     codej = request.json
     codedict = {str(k): unicode(v) for k, v in codej.items()}
-    print("code", codej["name"], project, codej, codedict)
+    # print("code", codej["name"], project, codej, codedict)
     cs.DB.save(**codedict)
     return codej["name"]
 
@@ -86,5 +68,6 @@ def save():
 def logout():
     """ Logout from session"""
     person = request.forms.get('person')
+    print("logout - request.forms.get('person')", person, project)
     cs.DB.logout(project, person)
     return "logout"

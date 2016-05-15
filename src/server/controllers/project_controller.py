@@ -20,27 +20,67 @@
 """Controller handles routes for in project imports.
 
 """
-__author__ = 'carlo'
-from lib.bottle import Bottle, HTTPError, request
+from bottle import Bottle, HTTPError, request, response, view, TEMPLATE_PATH
 from ..models import code_store as cs
-
-bottle = Bottle()  # create another WSGI application for this controller and resource.
+from . import BRYTHON
+import os
+import bottle
+import lib.bottle as bt
+__author__ = 'carlo'
+appbottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
+project_server = os.getcwd()
+# make sure the default templates directory is known to Bottle
+templates_dir = os.path.join(project_server, 'src/server/views/')
+# print(templates_dir)
+print("ctlinit ", project_server, templates_dir)
+if templates_dir not in bottle.TEMPLATE_PATH:
+    bottle.TEMPLATE_PATH.insert(0, templates_dir)
 
 
-@bottle.get('/<pypath:path>')
-def handle(pypath):
-    project = request.get_cookie('_spy_project_')
-    code = cs.DB.load(name=pypath)
-    print('/<pypath:path>', pypath, project, code)
+@appbottle.post('/<proj>/<pak>/___init___.py')
+@view('projeto')
+def edit(proj, pak):
+    """
+    Retorna a página de edição.
+
+    :param proj: Projeto de Edição.
+    :param pak: Pacote a ser editado.
+    :return: Nome do módulo, nome do arquivo, lista de scripts incluídos, nome do projeto.
+    """
+    module = request.forms.get('module')
+    code = request.forms.get('code') or "main.py"
+    project = request.forms.get('project')
+    code = '/'.join([module, code])  # if code else lastcodename
+    print ("Return Project editor", project, module, proj, pak, code)
+    if not cs.DB.load(code):
+        print ("Return Project editor not cs.DB.ismember",
+               "/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+        # bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+        cs.DB.save(person=module, name=code, text="#%s" % code)
+    print(""" Return Project editor dict""", dict(modulo=module, codename=code, brython=BRYTHON, projeto=project))
+    return dict(modulo=module, codename=code, brython=BRYTHON, projeto=project)
+
+
+@appbottle.get('/<proj>/<pak>/<mod>/<pypath:path>')
+def handle(proj, pak, mod, pypath):
+    """
+    Gerencia chamadas de __init__.
+
+    :param proj: Projeto de Edição.
+    :param pak: Pacote a ser editado.
+    :param mod: Módulo a ser editado.
+    :param pypath: Caminho a ser editado.
+    :return:  Um comentário **#**
+    """
+    project = proj
+    module = '/'.join([mod, pypath])
+    code = cs.DB.load(name=module)
     if code:
         return code
     if "__init__" in pypath:
-        module = pypath.split("/")
-        print('/<pypath:path__init__, pypath, module, project>', pypath, module, project)
-        module = module[0] if len(module) >= 2 else None
-        print('/<pypath:path__init__, module, project, cs.DB.ismember>', module, project, cs.DB.ismember(project, module))
-        if cs.DB.ismember(project, module):
+        print('/<pypath:path__init__, module, project, cs.DB.ismember>', module, project, cs.DB.ismember(project, mod))
+        if cs.DB.ismember(project, mod):
             return "#"
 
     raise HTTPError(404, "No such module.")

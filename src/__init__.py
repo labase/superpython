@@ -36,7 +36,7 @@ appbottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
 # appbottle.mount("/external/brython/Lib/site-packages", project_controller.bottle)
-appbottle.mount("/main/superpython", project_controller.bottle)
+appbottle.mount("/superpython", project_controller.appbottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
 appbottle.mount("/main", main_controller.bottle)
@@ -52,7 +52,7 @@ def home():
     redirect('/main?proj=%s' % prj)
 
 
-@appbottle.error(404)
+@appbottle.error(code=404)
 def error_404(_):
     """Return a custom 404 error."""
     return 'Sorry, Nothing at this URL.'
