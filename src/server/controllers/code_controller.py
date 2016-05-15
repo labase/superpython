@@ -22,10 +22,10 @@
 .. moduleauthor:: Carlo Oliveira <carlo@nce.ufrj.br>
 
 """
-__author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response, HTTPError
 from ..models import code_store as cs
 from . import BRYTHON, PROJECTS, DX, DY
+__author__ = 'carlo'
 DEFAULT_CODE = """# default
 try:
     import superpython.%s.main as main
@@ -38,6 +38,8 @@ except:
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
+
+
 def decorator():
     _project = request.query.proj
     print("get_project", _project)
@@ -51,6 +53,7 @@ def decorator():
             _project = "superpython"
     return _project
 
+
 @bottle.get('/_<module>')
 @view('game')
 def game(module):
@@ -61,24 +64,25 @@ def game(module):
     return dict(projeto=module, codename="main.py", path=path, brython=BRYTHON, dx=DX, dy=DY)
 
 
-
-@bottle.get('/superpython/<pypath:path>')
+@bottle.get('<pypath:path>')
 def handle(pypath):
+    pypath = pypath.split('_spy/')[1] if "_spy" in pypath else pypath
+    print('/<pypath:path>', pypath)
     # project = request.get_cookie('_spy_project_')
     code = cs.DB.load(name=pypath)
-    print('/<pypath:path>', pypath, code and code[:200])
+    # print('/<pypath:path>', pypath, code and code[:200])
     if code:
         return code
     if "__init__" in pypath:
         module = pypath.split("/")
         # module.remove("__init__.py")
-        print('/<pypath:path__init__, pypath, module, project>', pypath, module)
+        # print('/<pypath:path__init__, pypath, module, project>', pypath, module)
         if len(module) >= 3:
             project, module, path = module[0], module[1], '/'.join(module[1:])
-            print('/<pypath:path__init__, module, project, cs.DB.ismember>', module, project, cs.DB.ismember(project, module))
+            # print('/<pypath:module, cs.DB.ismember>', module, project, cs.DB.ismember(project, module))
             if cs.DB.ismember(project, module):
                 code = cs.DB.load(name=path)
-                print('handle/<pypath:path>', path, code and code[:80])
+                # print('handle/<pypath:path>', path, code and code[:80])
                 if code:
                     return code
                 else:
@@ -87,4 +91,3 @@ def handle(pypath):
         return "#"
 
     raise HTTPError(404, "No such module.")
-

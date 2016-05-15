@@ -25,7 +25,7 @@ from ..models import code_store as cs
 import collections
 Item = collections.namedtuple('Item', 'name picture x y ox oy')
 Par = collections.namedtuple('Par', 'x y')
-PROJECTS = "jardim spy super surdo mgeo cups hero star hacker".split()
+PROJECTS = "jardim spy superpython surdo mgeo cups hero star hacker".split()
 
 IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
         Par(45, 104), Par(205, 110), Par(432, 107), Par(600, 108),
@@ -90,12 +90,17 @@ def project_visual_data(project):
         return Par(-STEPX * (index % 6), -STEPY * (index//6))
     print("""project_visual_data""", project)
     persons, person_sprite = cs.DB.getlogged(project)
-    print("project_visual_data", persons)
+    """ Horrid Fix #000 for bad database initialization"""
+    if project == "superpython":
+        for spr in "_ aragonita basalto calcario calcita dolomita hematita marmore pomes seixo".split():
+            person_sprite.remove(spr)
+    """ End of HF#000 """
+    print("project_visual_data", person_sprite)
     pic_size = len(persons)
-    sorted_persons = sorted(persons.keys())
+    sorted_persons = sorted(person_sprite)
     tops = [Item(name, persons[name], x, y, 0, 0) for name, (x, y) in zip(sorted_persons[:pic_size], IPOS)]
     items = [Item(name, persons[name], x, y, gxy(name).x, gxy(name).y)
              for name, (x, y) in zip(sorted_persons[:pic_size], IPOS)]
-    print("home: persons, tops, items", persons, tops)
-    print("home: items", items)
+    # print("home: persons, tops, items", persons, tops)
+    # print("home: items", items)
     return tops, items

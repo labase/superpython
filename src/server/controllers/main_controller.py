@@ -23,10 +23,10 @@ Change this file's name and contents as appropriate to the
 resources your app exposes to clients.
 
 """
-__author__ = 'carlo'
 from lib.bottle import Bottle, view, request, response, redirect, HTTPError
 from ..models import code_store as cs
 from . import project, get_project, project_visual_data, BRYTHON
+__author__ = 'carlo'
 
 bottle = Bottle()  # create another WSGI application for this controller and resource.
 # debug(True) #  uncomment for verbose error logging. Do not use in production
@@ -34,10 +34,11 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 @bottle.get('/')
 @view('index')
+@get_project
 def home():
     """ Return User Selection at application root URL"""
     module = request.query.module
-    project = request.query.proj or "spy"
+    # project = request.query.proj or "spy"
     module = "NOT FOUND: %s" % module.upper() if module else None
     # print("home project", project)
     tops, items = project_visual_data(project)

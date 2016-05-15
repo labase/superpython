@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    intro.rst
-   release1_1_2.rst
+   release1_1_3.rst
    modules.rst
    tests.rst
 
