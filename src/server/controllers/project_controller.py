@@ -55,9 +55,10 @@ def edit(proj, pak):
     print ("Return Project editor", project, module, proj, pak, code)
     if not cs.DB.load(code):
         print ("Return Project editor not cs.DB.ismember",
-               "/main?proj=%s&module=%s" % (project, ".".join([module, code])))
+               dict(person=module, name=code, text="#%s" % code, project=project))
         # bt.redirect("/main?proj=%s&module=%s" % (project, ".".join([module, code])))
-        cs.DB.save(person=module, name=code, text="#%s" % code)
+        cs.DB.save(person=module, name=code, text="#%s" % code, project=project)
+    cs.DB.login(project, module)
     print(""" Return Project editor dict""", dict(modulo=module, codename=code, brython=BRYTHON, projeto=project))
     return dict(modulo=module, codename=code, brython=BRYTHON, projeto=project)
 

@@ -23,11 +23,11 @@
 .. moduleauthor:: Carlo Oliveira <carlo@nce.ufrj.br>
 
 """
-__author__ = 'carlo'
 # Imports the NDB data modeling API
 import os
 from uuid import uuid1
 import database as dbs
+__author__ = 'carlo'
 
 DEFAULT_PROJECTS = "DEFAULT_PROJECTS"
 DEFAULT_PROJECT_NAMES = "JardimBotanico SuperPlataforma SuperPython MuseuGeo"
@@ -35,7 +35,7 @@ OLDNA = "granito basalto pomes calcario marmore arenito" \
         " calcita_laranja agua_marinha amazonita hematita quartzo_rosa turmalina" \
         " citrino pirita silex ametista cristal quartzo-verde" \
         " seixo dolomita fluorita aragonita calcita onix" \
-        " feldspato _ jaspe agata sodalita alabastro".split()
+        " feldspato jaspe agata sodalita alabastro".split()
 NAMES = "granito arenito" \
         " calcita_laranja agua_marinha amazonita quartzo_rosa turmalina" \
         " citrino pirita silex ametista cristal quartzo-verde" \
@@ -44,10 +44,10 @@ NAMES = "granito arenito" \
 SNAMES = "aries touro gemeos cancer leao virgem libra escorpiao ofiuco sargitario capricornio aquario peixes".split()
 CNAMES = "chiclete framboesa red_velvet laranja baunilha limao goji morango capuccino marshmallow chocomenta blue_sky" \
          " cereja pao_de_mel milho_verde erva_doce mirtilo uva nozes banana pistache tutifruti vinho cassis".split()
-HNAMES = "sonic mulher_maravilha chapolin mestre_kame coringa darth_vader batman arrow petra lanterna_verde yoda tarzan homem_aranha" \
-         " verinha stelar florzinha lindinha docinho flash".split()
-FNAMES = "abacate abacaxi acerola ameixa amora bananas caju caqui carambola cerejas damasco framboesas goiaba graviola" \
-         " jaboticaba jaca kiwi laranjas manga maracuja melancia mirtilos morangos pera pitanga" \
+HNAMES = "sonic mulher_maravilha chapolin mestre_kame coringa darth_vader batman arrow petra lanterna_verde yoda" \
+         " tarzan homem_aranha verinha stelar florzinha lindinha docinho flash".split()
+FNAMES = "abacate abacaxi acerola ameixa amora bananas caju caqui carambola cerejas damasco framboesas goiaba" \
+         " graviola jaboticaba jaca kiwi laranjas manga maracuja melancia mirtilos morangos pera pitanga" \
          " sapoti tangerina tomate umbu uvas".split()
 ENAMES = ['sirius', 'canopus', 'arcturus', 'vega', 'capella', 'rigel', 'procyon', 'achernar', 'hadar', 'altair',
           'acrux', 'spica', 'antares', 'pollux', 'deneb', 'mimosa', 'regulus', 'adhara', 'castor', 'gacrux', 'shaula',
@@ -57,8 +57,6 @@ KNAMES = ['adware', 'anonymous', 'autorun', 'backdoor', 'boot', 'botnet', 'hijac
           'cookie', 'darknet', 'leakage', 'loss', 'theft', 'denial', 'driveby', 'exploit', 'fake', 'hacker', 'hoax',
           'honeypot', 'worm', 'keylogging', 'malware', 'parasitic', 'patches', 'phishing', 'unwanted', 'ransomware',
           'rootkit', 'engineer', 'spam', 'spoofing', 'spyware', 'injection', 'suspicious', 'trojan', 'virus', 'zombie']
-
-
 
 
 class Program(dbs.NDB.Expando):
@@ -98,7 +96,7 @@ class Project(dbs.NDB.Expando):
     def removesession(self, person):
         # self.sessions = set(self.sessions).remove(person)
         self.sessions[person] = False
-        print("removesession", person, self.sessions)
+        # print("removesession", person, self.sessions)
         self.put()
 
     @classmethod
@@ -169,17 +167,24 @@ class Code(dbs.NDB.Model):
         return query and query[0]
 
     @classmethod
-    def obtain(cls, person, name, text):
-        print("codeobtain", dict(person=person, name=name, text=text))
-        person = Person.nget(person)
-        print(dict(person=person.key, name=name, text=text))
+    def obtain(cls, person, name, text, project="superpython"):
+        print("codeobtain", dict(person_name=person, name=name, text=text, project=project))
+        personobj = Person.nget(person)
+        # print(dict(person=person.key, name=name, text=text))
         code = Code.nget(name=name)
+        # print("codeobtain_code", dict(person_name=person, code=code, text=text, person_obj=personobj))
         if code:
             code.set_text(text)
             code.put()
+        elif personobj:
+            code = Code.create(person=personobj.key, name=name, text=text)
         else:
-            code = Code.create(person=person.key, name=name, text=text)
-        person.updatecode(code.key)
+            prj = Project.nget(project)
+            # print("codeobtainprj", dict(person_name=person, name=name, text=text, project=prj.name))
+            personobj = Person.create(project=prj.key, name=person, lastsession=None)
+            # print("codeobtperson", dict(person_name=personobj.key, name=personobj.name, text=text, project=prj.name))
+            code = Code.create(person=personobj.key, name=name, text=text)
+        personobj.updatecode(code.key)
         return code
 
 
@@ -255,12 +260,12 @@ class Session(dbs.NDB.Expando):
 
     @classmethod
     def login(cls, project, person, session=None):
-        print("project, person", project, person)
+        # print("project, person", project, person)
         sessionname = session if Session.nget(session) else str(uuid1())
         project = Project.nget(project)
         project.updatesession(person)
         person = Person.nget(person)
-        print("project, person", project, person)
+        # print("project, person", project, person)
         cursession = cls.create(project=project.key, person=person.key, name=sessionname)
         lastsession = person.lastsession or cursession
         person.updatesession(cursession.key)

@@ -66,7 +66,7 @@ SuperPython - Introdução
 
     <h2>Prot&oacute;tipo Execut&aacute;vel</h2>
 
-    <p><a href="https://cetoli.pythonanywhere.com/ei"><img alt="" src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg" style="width: 368px; height: 345px;" /></a></p>
+    <p><a href="http://spy.is-by.us/"><img alt="" src="_static/superpython.jpg" style="width: 368px; height: 345px;" /></a></p>
 
     <h2>Equipe de Desenvolvimento</h2>
 
@@ -109,6 +109,26 @@ SuperPython - Introdução
     </div>
     <p>&nbsp;</p>
 
+SuperPython - Manual
+====================
+
+
+Este ambiente permite rodar um game stand alone e criar módulos que não estão no menu.
+
+
+Para rodar um game basta chamar <projeto>.is-by.us/code/_<modulo>. O submódulo *main.py* será importado.
+
+
+Para criar ou acessar um módulo fora do menu basta clicar a letra **O** no canto inferior direito do menu principal.
+
+
+A biblioteca Phaser está disponível baixada do CDN. Use: *from browser import window; window.Phaser*
+
+
+O projeto que se está usando pode ser caracterizado como a primeira palavra da url.
+
+
+Pode se importar novos módulos adicionando o prefixo (módulo) *_spy* na frente do nome do módulo que se quer importar.
 
 SuperPython - Modulos
 =====================

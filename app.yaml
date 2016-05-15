@@ -1,5 +1,5 @@
 application: super-py
-version: v112
+version: v113
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -15,8 +15,8 @@ handlers:
 - url: /main/.*\.py
   script: src.appbottle
 
-#- url: /superpython/.*\.py
-#  script: src.appbottle
+- url: /superpython/.*\.py
+  script: src.appbottle
 
 - url: /external/brython//Lib/(.*\.py)
   mime_type: text/plain

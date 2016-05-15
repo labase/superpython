@@ -36,7 +36,8 @@ appbottle = Bottle()
 
 # Mount a new instance of bottle for each controller and URL prefix.
 # appbottle.mount("/external/brython/Lib/site-packages", project_controller.bottle)
-appbottle.mount("/superpython", project_controller.appbottle)
+appbottle.mount("/<:re:.*>/_spy", code_controller.bottle)
+appbottle.mount("superpython", project_controller.appbottle)
 
 # Mount a new instance of bottle for each controller and URL prefix.
 appbottle.mount("/main", main_controller.bottle)
