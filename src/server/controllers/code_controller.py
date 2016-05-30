@@ -72,6 +72,9 @@ def handle(pypath):
     code = cs.DB.load(name=pypath)
     # print('/<pypath:path>', pypath, code and code[:200])
     if code:
+        if pypath.endswith(".css"):
+            # print("pypath.endswith", pypath)
+            response.headers['Content-Type'] = 'text/css'
         return code
     if "__init__" in pypath:
         module = pypath.split("/")

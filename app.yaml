@@ -15,7 +15,7 @@ handlers:
 - url: /main/.*\.py
   script: src.appbottle
 
-- url: /superpython/.*\.py
+- url: /superpython/.*\.(py|css|html|js)
   script: src.appbottle
 
 - url: /external/brython//Lib/(.*\.py)
