@@ -50,7 +50,7 @@
 
         </script>
     </head>
-    <body onLoad="brython(1)" background="/images/pipe_back.jpg">
+    <body onLoad="brython(1, {static_stdlib_import: true, pythonpath: ['_spy']})" background="/images/pipe_back.jpg">
         <div id="main"  style="position: relative; width: 100%; height: 400px; margin: 0px auto;">
             <div id="game"  style="position: absolute; width: 100%; height: 100%;"></div>
             <div id="edit"  style="position: absolute; width: 100%; height: 100%;">

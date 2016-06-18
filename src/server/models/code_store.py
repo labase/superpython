@@ -58,6 +58,11 @@ KNAMES = ['adware', 'anonymous', 'autorun', 'backdoor', 'boot', 'botnet', 'hijac
           'honeypot', 'worm', 'keylogging', 'malware', 'parasitic', 'patches', 'phishing', 'unwanted', 'ransomware',
           'rootkit', 'engineer', 'spam', 'spoofing', 'spyware', 'injection', 'suspicious', 'trojan', 'virus', 'zombie']
 
+EOBNAMES = 'aria chyntia evie king maxine lucina '\
+    'lenneth aurora samus amaterasu lucca lady '\
+    'mitsuru chell renard faith bayonetta cviper '\
+    'ellie carmen windrunner maureen red sarah '\
+    'sonya lara jill zelda roll terra'.split()
 
 class Program(dbs.NDB.Expando):
     """A main model for representing all projects."""
@@ -316,6 +321,7 @@ class Session(dbs.NDB.Expando):
         Session._populate_persons("jardim", FNAMES, FNAMES)
         Session._populate_persons("star", ENAMES, ENAMES)
         Session._populate_persons("hacker", KNAMES, KNAMES)
+        Session._populate_persons("eob", EOBNAMES, EOBNAMES)
 
     @classmethod
     def _populate_persons(cls, projectname, persons, sprites):

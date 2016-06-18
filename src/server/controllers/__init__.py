@@ -25,7 +25,7 @@ from ..models import code_store as cs
 import collections
 Item = collections.namedtuple('Item', 'name picture x y ox oy')
 Par = collections.namedtuple('Par', 'x y')
-PROJECTS = "jardim spy superpython surdo mgeo cups hero star hacker".split()
+PROJECTS = "jardim spy superpython surdo mgeo cups hero star hacker eob".split()
 
 IPOS = [Par(96, -1), Par(249, -22), Par(393, -23), Par(555, -4),
         Par(45, 104), Par(205, 110), Par(432, 107), Par(600, 108),
