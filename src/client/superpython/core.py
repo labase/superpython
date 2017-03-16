@@ -145,7 +145,7 @@ class Console:
         sys.stdout.write = self.write
         sys.stderr.write = self.write
         self._pycanvas.html = '<img id="emmenu"' \
-                              ' src="https://dl.dropboxusercontent.com/u/1751704/img/site_em_construcao_.jpg"' \
+                              ' src="/images/site_em_construcao_.jpg"' \
                               ' alt="menu" title="menu" width="400px"/>'
 
     def write(self, data):
@@ -154,8 +154,8 @@ class Console:
     def display_saved(self, message="SAVED"):
         self.jq_msg = self.jq['message'].dialog(
             dict(position=dict(my="left bottom", at="left bottom", of="#edit"),
-                 width=350, height=40, dialogClass="no-titlebar"), show=dict(effect="fade", duration=800),
-            hide=dict(effect="fade", duration=1800), buttons=[])
+                 width=850, height=40, dialogClass="no-titlebar"), show=dict(effect="fade", duration=800),
+            hide=dict(effect="fade", duration=5800), buttons=[])
         self._pymessage.style.display = "block"
         self._pymessage.value = message
         self.jq['message'].dialog("close")
@@ -280,11 +280,11 @@ class SuperPython:
                 self._console.display_saved(msg)
                 self.ace.test_dirty(None, code_saved=True)
             else:
-                error = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
-                self._console.display_saved("NOT SAVED: " + error)
+                err = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
+                self._console.display_saved("NOT SAVED: " + err)
 
         src = self.ace.test_dirty(False)
-        # print(SAVE, src)
+        # print("dirty ", SAVE, src)
         self._update_timer()
         if src is False:
             if not autosaved:
@@ -292,14 +292,15 @@ class SuperPython:
             return 1
         try:
             jsrc = json.dumps({"person": self.project, "name": self.name, "text": src})
-            # print(SAVE, jsrc)
+            # print("try jsrc ", SAVE, jsrc)
 
             req = self.ajax.ajax()
             req.bind('complete', on_complete)
             req.set_timeout('20000', lambda _=0: self._console.display_saved("NOT SAVED: TIMEOUT"))
-            req.open('POST', SAVE, async=False)
+            req.open('POST', SAVE, False)
             req.set_header('content-type', 'application/json')  # x-www-form-urlencoded')
             req.send(jsrc)
+            # print("send ", SAVE, jsrc)
 
             state = 1
         except Exception as error:
@@ -323,7 +324,7 @@ class SuperPython:
             req = self.ajax.ajax()
             req.bind('complete', on_complete)
             req.set_timeout('20000', lambda: self._console.display_saved("NOT LOADED: TIMEOUT"))
-            req.open('GET', LOAD_MODULE_ + filename, async=False)
+            req.open('GET', LOAD_MODULE_ + filename, False)
             req.set_header('content-type', 'application/x-www-form-urlencoded')
             req.send()
 

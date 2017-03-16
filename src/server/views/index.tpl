@@ -108,8 +108,10 @@ Super Python - User Programming Interface
             document["module"].value = user
             document["code"].value = ""
             document["project"].value = "{{ project }}"
-            document.forms["select"].action = document.forms["select"].action % user
-            document.forms["select"].submit()
+            old_action = document.get(selector='form')[0].action
+            document.get(selector='form')[0].action = old_action % user
+            document.get(selector='form')[0].submit()
+            document.get(selector='form')[0].action = old_action
         window._request_login_if_available = _request_login_if_available
         def _request_login_with_code():
             #alert("%s, %s" % (user, blocked))
@@ -118,8 +120,12 @@ Super Python - User Programming Interface
             dados = dados if len(dados) > 1 else dados + ['']
             document["module"].value, document["code"].value = dados
             document["project"].value = "{{ project }}"
-            document.forms["select"].action = document.forms["select"].action % dados[0]
-            document.forms["select"].submit()
+            old_action = document.get(selector='form')[0].action
+            document.get(selector='form')[0].action = old_action % dados[0]
+            document.get(selector='form').submit()
+            document.get(selector='form')[0].action = old_action
+            # document.forms["select"].action = document.forms["select"].action % dados[0]
+            # document.forms["select"].submit()
         window._request_login_with_code = _request_login_with_code
         def _dismiss_error_code():
             document["error"].style.display = "none"

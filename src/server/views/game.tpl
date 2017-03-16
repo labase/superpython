@@ -12,7 +12,9 @@
         % end
 
         <script type="text/python">
-            import {{ path }}
+            # from {{ "%s.main" % path }} import main
+            # main()
+            {{ code }}
         </script>
     </head>
     <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">

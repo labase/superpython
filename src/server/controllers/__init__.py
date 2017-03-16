@@ -46,8 +46,8 @@ DX, DY = (300, 300)
 # BRYTHON = "https://dl.dropboxusercontent.com/u/1751704/lib/Brython3.2.3/brython.js"
 # BRYTHON = ["https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"]
 BRYTHON = ["https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.7/phaser.min.js"]
-BRYTHON += ["https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"]
-# BRYTHON += ["https://cdn.rawgit.com/brython-dev/brython/3.2.6/www/src/brython.js"]
+# BRYTHON += ["https://dl.dropboxusercontent.com/u/1751704/lib/brython/brython.js"]
+BRYTHON += ["https://cdn.rawgit.com/brython-dev/brython/3.3.1/www/src/brython.js"]
 # BRYTHON = "http://www.brython.info/src/brython.js"
 # import sys
 # project_server = '/'.join(os.getcwd().split('/')[:-1])

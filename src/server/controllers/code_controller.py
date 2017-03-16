@@ -28,7 +28,7 @@ from . import BRYTHON, PROJECTS, DX, DY
 __author__ = 'carlo'
 DEFAULT_CODE = """# default
 try:
-    import superpython.%s.main as main
+    import _spy.%s.main as main
     main.main()
 except:
     from browser import document, html
@@ -54,14 +54,35 @@ def decorator():
     return _project
 
 
+def gameold(module):
+    """ Return Project editor"""
+    project = decorator()
+    path = "%s/main.py" % (module)
+    print("game(module)", path)
+    if len(module) >= 3:
+        if cs.DB.ismember(project, module):
+            code = cs.DB.load(name=path)
+            print('handle/<pypath:path>', path, code and code[:80])
+            if code:
+                return dict(projeto=module, codename="main.py", path=path, code=code, brython=BRYTHON, dx=DX, dy=DY)
+    else:
+        return dict(projeto=module, codename="main.py", path=path, code=DEFAULT_CODE, brython=BRYTHON, dx=DX, dy=DY)
+
+
 @bottle.get('/_<module>')
-@view('game')
 def game(module):
     """ Return Project editor"""
     project = decorator()
-    path = "superpython.%s.%s" % (project, module)
+    path = "%s/main.py" % (module)
     print("game(module)", path)
-    return dict(projeto=module, codename="main.py", path=path, brython=BRYTHON, dx=DX, dy=DY)
+    if len(module) >= 3:
+        if cs.DB.ismember(project, module):
+            code = cs.DB.load(name=path)
+            print('handle/<pypath:path>', path, code and code[:80])
+            if code:
+                return CODE_DEFAULT.format(**dict(projeto=module, codename="main.py", path=path, code=code, scp0=BRYTHON[0], scp1=BRYTHON[1], dx=DX, dy=DY))
+    else:
+        return CODE_DEFAULT.format(**dict(projeto=module, codename="main.py", path=path, code=DEFAULT_CODE, scp0=BRYTHON[0], scp1=BRYTHON[1], dx=DX, dy=DY))
 
 
 @bottle.get('<pypath:path>')
@@ -94,3 +115,34 @@ def handle(pypath):
         return "#"
 
     raise HTTPError(404, "No such module.")
+
+CODE_DEFAULT = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Superpython : {projeto}-{codename}</title>
+        <link rel="stylesheet" href="/style.css" type="text/css" />
+        <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
+        <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+        <script type="text/javascript" src="{scp0}"></script>
+        <script type="text/javascript" src="{scp1}"></script>
+
+        <script type="text/python">
+            {code}
+        </script>
+    </head>
+    <body onLoad="brython({{debug:1, cache:'browser', static_stdlib_import:true}})" background="/images/pipe_back.jpg">
+           <div id="pydiv"  title="" style="width: {dx}px;
+    height: {dy}px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;">
+                <span style="color:white">LOADING..</span>
+           </div>
+    </body>
+</html>
+"""
