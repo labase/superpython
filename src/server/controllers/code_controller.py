@@ -22,7 +22,7 @@
 .. moduleauthor:: Carlo Oliveira <carlo@nce.ufrj.br>
 
 """
-from lib.bottle import Bottle, view, request, response, HTTPError
+from lib.bottle import Bottle, request, response, HTTPError
 from ..models import code_store as cs
 from . import BRYTHON, PROJECTS, DX, DY
 __author__ = 'carlo'
@@ -42,7 +42,6 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 
 def decorator():
     _project = request.query.proj
-    print("get_project", _project)
     if not _project or _project not in PROJECTS:
         _project = request.urlparts.hostname.split('.')
         if _project and (_project[0] in PROJECTS):
@@ -51,44 +50,35 @@ def decorator():
             _project = request.get_cookie('_spy_project_')
         else:
             _project = "superpython"
+    print("get_project", _project)
     return _project
-
-
-def gameold(module):
-    """ Return Project editor"""
-    project = decorator()
-    path = "%s/main.py" % (module)
-    print("game(module)", path)
-    if len(module) >= 3:
-        if cs.DB.ismember(project, module):
-            code = cs.DB.load(name=path)
-            print('handle/<pypath:path>', path, code and code[:80])
-            if code:
-                return dict(projeto=module, codename="main.py", path=path, code=code, brython=BRYTHON, dx=DX, dy=DY)
-    else:
-        return dict(projeto=module, codename="main.py", path=path, code=DEFAULT_CODE, brython=BRYTHON, dx=DX, dy=DY)
 
 
 @bottle.get('/_<module>')
 def game(module):
     """ Return Project editor"""
     project = decorator()
-    path = "%s/main.py" % (module)
+    path = "%s/main.py" % module
+    if "spy" in module:
+        return handle(module)
     print("game(module)", path)
     if len(module) >= 3:
         if cs.DB.ismember(project, module):
             code = cs.DB.load(name=path)
             print('handle/<pypath:path>', path, code and code[:80])
             if code:
-                return CODE_DEFAULT.format(**dict(projeto=module, codename="main.py", path=path, code=code, scp0=BRYTHON[0], scp1=BRYTHON[1], dx=DX, dy=DY))
+                return CODE_DEFAULT.format(**dict(projeto=module, codename="main.py", path=path, code=code,
+                                                  scp0=BRYTHON[0], scp1=BRYTHON[1], dx=DX, dy=DY))
     else:
-        return CODE_DEFAULT.format(**dict(projeto=module, codename="main.py", path=path, code=DEFAULT_CODE, scp0=BRYTHON[0], scp1=BRYTHON[1], dx=DX, dy=DY))
+        return CODE_DEFAULT.format(**dict(projeto=module, codename="main.py", path=path, code=DEFAULT_CODE,
+                                          scp0=BRYTHON[0], scp1=BRYTHON[1], dx=DX, dy=DY))
 
 
 @bottle.get('<pypath:path>')
 def handle(pypath):
     pypath = pypath.split('_spy/')[1] if "_spy" in pypath else pypath
-    print('/<pypath:path>', pypath)
+    pypath = pypath if pypath[0] != '/' else pypath[1:]
+    print('handle /<pypath:path>', pypath)
     # project = request.get_cookie('_spy_project_')
     code = cs.DB.load(name=pypath)
     # print('/<pypath:path>', pypath, code and code[:200])
