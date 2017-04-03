@@ -122,7 +122,7 @@ Super Python - User Programming Interface
             document["project"].value = "{{ project }}"
             old_action = document.get(selector='form')[0].action
             document.get(selector='form')[0].action = old_action % dados[0]
-            document.get(selector='form').submit()
+            document.get(selector='form')[0].submit()
             document.get(selector='form')[0].action = old_action
             # document.forms["select"].action = document.forms["select"].action % dados[0]
             # document.forms["select"].submit()
