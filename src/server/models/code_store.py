@@ -49,6 +49,12 @@ HNAMES = "sonic mulher_maravilha chapolin mestre_kame coringa darth_vader batman
 FNAMES = "abacate abacaxi acerola ameixa amora bananas caju caqui carambola cerejas damasco framboesas goiaba" \
          " graviola jaboticaba jaca kiwi laranjas manga maracuja melancia mirtilos morangos pera pitanga" \
          " sapoti tangerina tomate umbu uvas".split()
+DUNAMES = "dabacate dabacaxi dacerola dameixa damora dbananas dcaju dcaqui dcarambola dcerejas ddamasco dframboesas" \
+         " dgoiaba dgraviola djaboticaba djaca dkiwi dlaranjas dmanga dmaracuja dmelancia dmirtilos dmorangos dpera" \
+         " dpitanga dsapoti dtangerina dtomate dumbu duvas".split()
+NUNAMES = "nabacate nabacaxi nacerola nameixa namora nbananas ncaju ncaqui ncarambola ncerejas ndamasco nframboesas" \
+         " ngoiaba ngraviola njaboticaba njaca nkiwi nlaranjas nmanga nmaracuja nmelancia nmirtilos nmorangos npera" \
+         " npitanga nsapoti ntangerina ntomate numbu nuvas".split()
 ENAMES = ['sirius', 'canopus', 'arcturus', 'vega', 'capella', 'rigel', 'procyon', 'achernar', 'hadar', 'altair',
           'acrux', 'spica', 'antares', 'pollux', 'deneb', 'mimosa', 'regulus', 'adhara', 'castor', 'gacrux', 'shaula',
           'alnilam', 'alnair', 'regor', 'alioth', 'kaus', 'mirfak', 'dubhe', 'wezen', 'alkaid', 'sargas',
@@ -58,11 +64,18 @@ KNAMES = ['adware', 'anonymous', 'autorun', 'backdoor', 'boot', 'botnet', 'hijac
           'honeypot', 'worm', 'keylogging', 'malware', 'parasitic', 'patches', 'phishing', 'unwanted', 'ransomware',
           'rootkit', 'engineer', 'spam', 'spoofing', 'spyware', 'injection', 'suspicious', 'trojan', 'virus', 'zombie']
 
+PS17NAMES = 'arquivo_x arquivo_cnf as_panteras blue_bloods bones brooklin_99 '\
+ 'casal_20 castle cold_case columbo crime_minds xssing_lines '\
+ 'CSI elementary grimm law_n_order laworder_svu marcella '\
+ 'medium monk narcos person_of_i rookie_blue sherlock '\
+ 'the_closer the_following the_mentalist the_blacklist the_shield wo_a_trace'.split()
+
 EOBNAMES = 'aria chyntia evie king maxine lucina '\
     'lenneth aurora samus amaterasu lucca lady '\
     'mitsuru chell renard faith bayonetta cviper '\
     'ellie carmen windrunner maureen red sarah '\
     'sonya lara jill zelda roll terra'.split()
+
 
 class Program(dbs.NDB.Expando):
     """A main model for representing all projects."""
@@ -322,6 +335,9 @@ class Session(dbs.NDB.Expando):
         Session._populate_persons("star", ENAMES, ENAMES)
         Session._populate_persons("hacker", KNAMES, KNAMES)
         Session._populate_persons("eob", EOBNAMES, EOBNAMES)
+        Session._populate_persons("ps17", PS17NAMES, PS17NAMES)
+        Session._populate_persons("nuva", NUNAMES, NUNAMES)
+        Session._populate_persons("duva", DUNAMES, DUNAMES)
 
     @classmethod
     def _populate_persons(cls, projectname, persons, sprites):
