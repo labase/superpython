@@ -317,7 +317,8 @@ class SuperPython:
             else:
                 error = str(request.text) if len(request.text) > 2 else "WEB FAILURE"
                 error = msg or "NOT LOADED: " + error
-                self._console.display_saved(error)
+                if self._console:
+                    self._console.display_saved(error)
 
         try:
             filename = self.name
