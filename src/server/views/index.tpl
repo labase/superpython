@@ -69,13 +69,14 @@ Super Python - User Programming Interface
     </style>
 
     <script type="text/python">
-        from browser import alert, document, window
+        from browser import alert, document, window, html
         class Edi:
             def __init__(self):
                 self.last = (0,0)
                 self.on = False
                 self.z = document["selector"]
                 self.cap = None
+                self._unlock_on_code()
             def _on_mouse_down(self, ev):
                 self.on = not self.on
                 self.cap = ev.target.parent.id
@@ -95,8 +96,28 @@ Super Python - User Programming Interface
                     cap.style.top = y
                     print(x, y, a, b, c, d, j, k, cap.left, cap.top)
                     self.last = (a, b)
+                #print(ev.target.id, ev.clientX, ev.clientY)
 
-                print(ev.target.id, ev.clientX, ev.clientY)
+            def _unlock_on_code(self, code="eIYMi"):
+                codex = list(code[:])
+                def _unlocker(ev):
+                    if codex[0] in ev.target.id:
+                      codex.pop(0)
+                    if not codex:
+                      document["maskon"].style.top = "-1000px"
+                    print(ev.target.id, codex)
+                code = list(code)
+                for i in range(0, 7):
+                    for j in range(0, 7):
+                      cod = chr(ord("A")+ j*7+i)
+                      if cod in code:
+                        code.remove(cod)
+                        marker =  html.DIV(
+                        '<span id="_%s__", style="font-size:48px">O</span>' % cod, id="_%s_" % cod,
+                         style=dict(position="absolute",left="%dpx"%(42+i*125), opacity=0, top="%dpx"%(42+j*128)))
+                        marker.onclick = _unlocker
+                        document["maskon"] <= marker
+
         def _request_login_if_available(user, blocked):
             #alert("%s, %s" % (user, blocked))
             #return
@@ -142,7 +163,7 @@ Super Python - User Programming Interface
 </head>
 <body onLoad="brython({debug:1, cache:'browser', static_stdlib_import:true})" background="/images/pipe_back.jpg">
 <div id="banner">
-]    <div id="mask" style="position:absolute; left:0px; top:0px; background-image: url(images/Bumpplat.jpg); height: 1000px; width: 890px">
+    <div id="mask" style="position:absolute; left:0px; top:0px; background-image: url(images/Bumpplat.jpg); height: 1000px; width: 890px">
         <div id="selector" style="position:float; left:0px; top:0px; padding: 60px">
             <form id="select" method="post" action="/superpython/{{ project }}/%s/___init___.py">
                 % for item, (sel, proj) in enumerate(zip(selector, result)):
@@ -193,7 +214,7 @@ Super Python - User Programming Interface
         </div>
         ---
     </div>
-
+    <div id="maskon" style="position:absolute; left:0px; top:0px; background-image: url(images/Bumpplat.jpg); height: 1000px; width: 890px">
 </div>
 
 </body>

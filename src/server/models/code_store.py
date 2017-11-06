@@ -44,8 +44,8 @@ NAMES = "granito arenito" \
 SNAMES = "aries touro gemeos cancer leao virgem libra escorpiao ofiuco sargitario capricornio aquario peixes".split()
 CNAMES = "chiclete framboesa red_velvet laranja baunilha limao goji morango capuccino marshmallow chocomenta blue_sky" \
          " cereja pao_de_mel milho_verde erva_doce mirtilo uva nozes banana pistache tutifruti vinho cassis".split()
-HNAMES = "sonic mulher_maravilha chapolin mestre_kame coringa darth_vader batman arrow petra lanterna_verde yoda" \
-         " tarzan homem_aranha verinha stelar florzinha lindinha docinho flash".split()
+HNAMES = "sonic maravilha chapolin kame coringa vader batman arrow petra lanterna yoda" \
+         " tarzan aranha hulk stelar florzinha lindinha docinho flash daredevil ironman cage jessica america".split()
 FNAMES = "abacate abacaxi acerola ameixa amora bananas caju caqui carambola cerejas damasco framboesas goiaba" \
          " graviola jaboticaba jaca kiwi laranjas manga maracuja melancia mirtilos morangos pera pitanga" \
          " sapoti tangerina tomate umbu uvas".split()
