@@ -76,7 +76,7 @@ Super Python - User Programming Interface
                 self.on = False
                 self.z = document["selector"]
                 self.cap = None
-                self._unlock_on_code()
+                self._unlock_on_code("{{ codex }}")
             def _on_mouse_down(self, ev):
                 self.on = not self.on
                 self.cap = ev.target.parent.id
@@ -107,6 +107,8 @@ Super Python - User Programming Interface
                       document["maskon"].style.top = "-1000px"
                     print(ev.target.id, codex)
                 code = list(code)
+                if not codex:
+                    document["maskon"].style.top = "-1000px"
                 for i in range(0, 7):
                     for j in range(0, 7):
                       cod = chr(ord("A")+ j*7+i)
@@ -214,7 +216,9 @@ Super Python - User Programming Interface
         </div>
         ---
     </div>
-    <div id="maskon" style="position:absolute; left:0px; top:0px; background-image: url(images/Bumpplat.jpg); height: 1000px; width: 890px">
+    <div id="maskon" style="position:absolute; opacity:0; left:0px; top:0px; background-image: url(images/Bumpplat.jpg);
+     height: 1000px; width: 890px">
+    </div>
 </div>
 
 </body>

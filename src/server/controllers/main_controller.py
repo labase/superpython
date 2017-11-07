@@ -37,12 +37,13 @@ bottle = Bottle()  # create another WSGI application for this controller and res
 @get_project
 def home():
     """ Return User Selection at application root URL"""
-    module = request.query.module
+    _module = request.query.module
     # project = request.query.proj or "spy"
-    module = "NOT FOUND: %s" % module.upper() if module else None
+    _module = "NOT FOUND: %s" % _module.upper() if _module else None
     # print("home project", project)
     tops, items = project_visual_data(project)
-    return dict(project=project, result=items, selector=tops, brython=BRYTHON, fault=module)
+    codex = "eIYMi" if "hero" in project else ""
+    return dict(project=project, result=items, selector=tops, brython=BRYTHON, fault=_module, codex=codex)
 
 
 @bottle.get('/load')
