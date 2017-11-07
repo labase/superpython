@@ -1,12 +1,12 @@
 application: super-py
-version: v116
+version: v119
 runtime: python27
 api_version: 1
 threadsafe: yes
 
 handlers:
 
-- url: (/superpython/.*/.*/__core__\.py|superpython/.*/.*/__init__\.py)
+- url: (/superpython/.*/.*/__core__\.py|superpython/.*/.*/__init__\.py|/tut/__core__\.py|tut/__init__\.py)
   mime_type: text/plain
   static_files: src/client/superpython/core.py
   upload: src/client/(.*\.py)
